@@ -1,0 +1,26 @@
+version: '3.8'
+services:
+  # MySQL 데이터베이스
+  mysql:
+    image: mysql:8.0
+    container_name: jaego-mysql
+    restart: always
+    ports:
+      - "3307:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: 1234
+      MYSQL_DATABASE: jaegoVer1
+      MYSQL_USER: jaegouser
+      MYSQL_PASSWORD: jaego1234
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql  # 초기 데이터 설정
+    healthcheck:
+      test: [ "CMD","mysqladmin","ping","-h", "localhost" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+volumes:
+    mysql_data:
+
