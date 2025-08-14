@@ -9,12 +9,11 @@ services:
       - "3307:3306"
     environment:
       MYSQL_ROOT_PASSWORD: 1234
-      MYSQL_DATABASE: jaegoVer1
+      MYSQL_DATABASE: JeagoMysql
       MYSQL_USER: jaegouser
       MYSQL_PASSWORD: jaego1234
     volumes:
-      - mysql_data:/var/lib/mysql
-      - ./init.sql:/docker-entrypoint-initdb.d/init.sql  # 초기 데이터 설정
+      - mysql_data_Jeago:/var/lib/mysql
     healthcheck:
       test: [ "CMD","mysqladmin","ping","-h", "localhost" ]
       interval: 30s
@@ -22,5 +21,5 @@ services:
       retries: 5
 
 volumes:
-    mysql_data:
+    mysql_data_Jeago:
 

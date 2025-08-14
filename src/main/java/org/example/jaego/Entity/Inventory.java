@@ -46,7 +46,7 @@ public class Inventory {
 
     @OneToMany(mappedBy = "inventory", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @Builder.Default
-    private List<Stock_Batches> stockBatches = new ArrayList<>();
+    private List<stockBatches> stockBatches = new ArrayList<>();
 
     // 카테고리 미지정 여부 확인 메서드
     public boolean isCategoryAssigned() {

@@ -27,7 +27,7 @@ public class Category {
     private String category; //중분류
 
     @Column(name = "category_type", length = 50)
-    private String categoryType; // "발주", "재고" 등
+    private String categoryType; // 유통, 소빗
 
     //@Column(name = "category_2")
     //private String category2; //소분류
