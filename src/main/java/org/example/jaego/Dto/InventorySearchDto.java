@@ -10,5 +10,5 @@ public class InventorySearchDto {
     private String name;
     private String categoryName;
     private Integer totalQuantity;
-    private java.time.LocalDate earliestExpiryDate;
+    private java.time.LocalDateTime earliestExpiryDate;
 }

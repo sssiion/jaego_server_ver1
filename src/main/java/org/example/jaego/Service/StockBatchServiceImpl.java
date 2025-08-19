@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -31,6 +32,8 @@ public class StockBatchServiceImpl implements StockBatchService {
 
     @Autowired
     private InventoryService inventoryService;
+    @Autowired
+    private StockBatchAutoService stockBatchAutoService;
 
     @Override
     @Transactional(readOnly = true)
@@ -46,7 +49,7 @@ public class StockBatchServiceImpl implements StockBatchService {
     @Override
     @Transactional(readOnly = true)
     public List<UrgentBatchDto> getUrgentBatches(Integer days) {
-        LocalDate targetDate = LocalDate.now().plusDays(days);
+        LocalDateTime targetDate = LocalDateTime.now().plusDays(days);
         List<stockBatches> batches = stockBatchesRepository.findUrgentBatchesByDays(targetDate);
 
         return batches.stream()
@@ -106,24 +109,23 @@ public class StockBatchServiceImpl implements StockBatchService {
 
         return convertToDto(savedBatch);
     }
-
     @Override
-    public StockBatchDto updateBatchQuantity(Long batchId, Integer newQuantity) {
-        if (newQuantity < 0) {
-            throw new InvalidQuantityException("수량은 0 이상이어야 합니다.");
-        }
+    public void updateBatch(Long batchId, LocalDateTime newExpiryDate, Integer newQuantity) {
 
+        int updatedRows = stockBatchesRepository.updateBatch(batchId, newExpiryDate, newQuantity);
+
+
+        if (updatedRows == 0) {
+            throw new RuntimeException("유통기한 수정 실패 - 배치를 찾을 수 없습니다. ID: " + batchId);
+        }
         stockBatches batch = stockBatchesRepository.findById(batchId)
                 .orElseThrow(() -> new StockBatchNotFoundException("배치를 찾을 수 없습니다: " + batchId));
-
-        batch.setQuantity(newQuantity);
-        stockBatches updatedBatch = stockBatchesRepository.save(batch);
-
-        // 총 수량 업데이트
-        inventoryService.updateTotalQuantity(batch.getInventory().getInventoryId());
-
-        return convertToDto(updatedBatch);
+        Inventory inventory = inventoryRepository.findInventoriesByStockBatchesContains(batch);
+        if ( stockBatchesRepository.existsById(batch.getId())) {
+            stockBatchAutoService.adjustBatchesToTotalQuantity(inventory.getInventoryId());
+        }
     }
+
 
     @Override
     public void deleteBatch(Long batchId) {
@@ -219,8 +221,8 @@ public class StockBatchServiceImpl implements StockBatchService {
     @Transactional(readOnly = true)
     public BatchStatsDto getBatchStatsByInventory(Long inventoryId) {
         Integer totalQuantity = stockBatchesRepository.getTotalQuantityByInventoryId(inventoryId);
-        LocalDate earliestExpiry = stockBatchesRepository.getEarliestExpiryDateByInventoryId(inventoryId);
-        Long urgentCount = stockBatchesRepository.countUrgentBatchesByDays(LocalDate.now().plusDays(7));
+        LocalDateTime earliestExpiry = stockBatchesRepository.getEarliestExpiryDateByInventoryId(inventoryId);
+        Long urgentCount = stockBatchesRepository.countUrgentBatchesByDays(LocalDateTime.now().plusDays(7));
         Long expiredCount = stockBatchesRepository.countExpiredBatches();
 
         return BatchStatsDto.builder()
@@ -242,7 +244,7 @@ public class StockBatchServiceImpl implements StockBatchService {
             return false;
         }
 
-        if (request.getExpiryDate() != null && request.getExpiryDate().isBefore(LocalDate.now())) {
+        if (request.getExpiryDate() != null && request.getExpiryDate().isBefore(LocalDateTime.now())) {
             return false;
         }
 
@@ -269,4 +271,5 @@ public class StockBatchServiceImpl implements StockBatchService {
                 .updatedAt(batch.getUpdatedAt())
                 .build();
     }
+
 }

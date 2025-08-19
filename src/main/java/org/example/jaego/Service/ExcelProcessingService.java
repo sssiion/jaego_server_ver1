@@ -42,12 +42,22 @@ public class ExcelProcessingService {
         Map<String, Inventory> invMap = invRepo
                 .findByNameInOrderByName(rows.stream().map(StockExcelRowDto::getProductName).toList())
                 .stream().collect(Collectors.toMap(Inventory::getName, i -> i));
+        // 카테고리 정보도 미리 담고오면 필요시 신규 Inventory에 세팅 가능
 
         for (StockExcelRowDto r : rows) {
             Inventory inv = invMap.get(r.getProductName());
-            if (inv == null) { errors.add("상품 없음: "+r.getProductName()); continue; }
+            if (inv == null) {
+                //errors.add("상품 없음: "+r.getProductName());
+
+                inv = invRepo.save(Inventory.builder()
+                        .name(r.getProductName())
+                        .category(null) // 카테고리가 필요 없으면 null로 둘 수 있음
+                        .totalQuantity(r.getRemainingStock())  // 재고 처음 생성시 0으로 초기화
+                        .build());
+                invMap.put(r.getProductName(), inv);
+            }
             if (inv.getTotalQuantity() < r.getSalesQuantity()) {
-                errors.add("재고 부족: "+r.getProductName()); continue;
+                //errors.add("재고 부족: "+r.getProductName()); continue;
             }
             reduceFIFO(inv.getInventoryId(), r.getSalesQuantity());
             inv.setTotalQuantity(r.getRemainingStock());
@@ -85,7 +95,7 @@ public class ExcelProcessingService {
                 Category cat = null;
                 if (r.getCategoryName()!=null) {
                     cat = catMap.computeIfAbsent(r.getCategoryName(),
-                            cName -> catRepo.save(Category.builder().category(cName).categoryType("발주").build()));
+                            cName -> catRepo.save(Category.builder().category(cName).build()));
                 }
                 Inventory inv = invMap.get(r.getProductName());
                 if (inv==null) {
@@ -133,7 +143,7 @@ public class ExcelProcessingService {
         if (remain>0) throw new IllegalStateException("재고 부족 "+remain);
     }
 
-    private void addBatch(Long invId, int qty, java.time.LocalDate expiry) {
+    private void addBatch(Long invId, int qty, java.time.LocalDateTime expiry) {
         Inventory inv = invRepo.findById(invId).orElseThrow();
         if (expiry == null) {
             List<stockBatches> nullBatches = batchRepo.findNullExpiryBatchesByInventoryId(invId);

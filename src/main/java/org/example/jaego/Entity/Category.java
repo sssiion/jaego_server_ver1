@@ -24,7 +24,8 @@ public class Category {
     private Long categoryId;
 
     @Column(name="category",nullable = false, length = 50)
-    private String category; //중분류
+    @Builder.Default
+    private String category="전체"; //중분류 .> 기본값
 
     @Column(name = "category_type", length = 50)
     private String categoryType; // 유통, 소빗

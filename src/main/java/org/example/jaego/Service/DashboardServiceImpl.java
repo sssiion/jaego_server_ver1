@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.example.jaego.Dto.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.List;
@@ -51,7 +52,7 @@ public class DashboardServiceImpl implements DashboardService {
                 .sum();
 
         // 임박 상품 수 (7일 이내)
-        Long urgentProducts = stockBatchesRepository.countUrgentBatchesByDays(LocalDate.now().plusDays(7));
+        Long urgentProducts = stockBatchesRepository.countUrgentBatchesByDays(LocalDateTime.now().plusDays(7));
 
         // 만료된 상품 수
         Long expiredProducts = stockBatchesRepository.countExpiredBatches();
@@ -77,7 +78,7 @@ public class DashboardServiceImpl implements DashboardService {
                     Long inventoryCount = categoryRepository.countInventoriesByCategoryId(category.getCategoryId());
                     Integer totalQuantity = stockBatchesRepository.getTotalQuantityByCategory(category.getCategoryId());
                     Long urgentBatchCount = stockBatchesRepository
-                            .countUrgentBatchesByCategory(category.getCategoryId(), LocalDate.now().plusDays(7));
+                            .countUrgentBatchesByCategory(category.getCategoryId(), LocalDateTime.now().plusDays(7));
 
                     return CategoryStatsDto.builder()
                             .categoryId(category.getCategoryId())
@@ -93,7 +94,7 @@ public class DashboardServiceImpl implements DashboardService {
 
     @Override
     public UrgentProductsStatsDto getUrgentProductsStats(Integer days) {
-        LocalDate targetDate = LocalDate.now().plusDays(days);
+        LocalDateTime targetDate = LocalDateTime.now().plusDays(days);
 
         // 임박 배치 조회
         var urgentBatches = stockBatchesRepository.findUrgentBatchesByDays(targetDate);
@@ -156,7 +157,7 @@ public class DashboardServiceImpl implements DashboardService {
         return inventoryRepository.findInventoriesWithUrgentBatches(7).stream()
                 .limit(limit)
                 .map(inventory -> {
-                    LocalDate earliestExpiry = stockBatchesRepository
+                    LocalDateTime earliestExpiry = stockBatchesRepository
                             .getEarliestExpiryDateByInventoryId(inventory.getInventoryId());
 
                     return UrgentInventoryDto.builder()
@@ -246,11 +247,11 @@ public class DashboardServiceImpl implements DashboardService {
         List<UrgentInventoryDto> topUrgent = getTopUrgentProducts(5);
 
         // 이번 주 만료 예정 수량
-        LocalDate weekEnd = LocalDate.now().plusDays(7);
+        LocalDateTime weekEnd = LocalDateTime.now().plusDays(7);
         Long thisWeekExpiring = stockBatchesRepository.countUrgentBatchesByDays(weekEnd);
 
         // 이번 달 만료 예정 수량
-        LocalDate monthEnd = LocalDate.now().plusDays(30);
+        LocalDateTime monthEnd = LocalDateTime.now().plusDays(30);
         Long thisMonthExpiring = stockBatchesRepository.countUrgentBatchesByDays(monthEnd);
 
         return DashboardSummaryDto.builder()

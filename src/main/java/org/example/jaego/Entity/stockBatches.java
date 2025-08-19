@@ -29,7 +29,7 @@ public class stockBatches {
     private Integer quantity;
 
     @Column(name = "expiry_date")
-    private LocalDate expiryDate; // 유통기한
+    private LocalDateTime expiryDate; // 유통기한
 
     @CreationTimestamp
     @Column(name = "created_at")
@@ -39,15 +39,5 @@ public class stockBatches {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    // 비즈니스 메서드: 유통기한 임박 여부 확인
-    public boolean isExpiringSoon(int days) {
-        if (expiryDate == null) return false;
-        return expiryDate.isBefore(LocalDate.now().plusDays(days));
-    }
 
-    // 비즈니스 메서드: 유통기한 만료 여부 확인
-    public boolean isExpired() {
-        if (expiryDate == null) return false;
-        return expiryDate.isBefore(LocalDate.now());
-    }
 }

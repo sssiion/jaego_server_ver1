@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import javax.swing.text.html.Option;
 import java.util.List;
 import java.util.Optional;
 
@@ -17,6 +18,10 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
 
     // 카테고리 타입별 조회 (유통기한/소비기한)
     List<Category> findByCategoryTypeOrderByCategory(String categoryType);
+
+    // 카테고리 이름으로  찿기
+    @Query("SELECT c FROM Category c WHERE c.category = :categoryType ORDER BY c.category")
+    List<Category> findByCategoryType(@Param("categoryType") String categoryType);
 
     // 유통기한 카테고리만 조회
     @Query("SELECT c FROM Category c WHERE c.categoryType = '유통기한' ORDER BY c.category")
@@ -31,6 +36,8 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
 
     // 카테고리명 중복 체크
     boolean existsByCategory(String category);
+
+
 
     // 재고가 있는 활성 카테고리 조회
     @Query("SELECT DISTINCT c FROM Category c INNER JOIN c.inventories i WHERE SIZE(i.stockBatches) > 0 ORDER BY c.category")

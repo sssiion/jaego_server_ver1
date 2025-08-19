@@ -8,6 +8,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
@@ -17,20 +18,25 @@ public interface StockBatchRepository extends JpaRepository<stockBatches, Long> 
             "WHERE sb.inventory.inventoryId = :inventoryId " +
             "ORDER BY CASE WHEN sb.expiryDate IS NULL THEN 0 ELSE 1 END, sb.expiryDate ASC")
     List<stockBatches> findByInventoryIdOrderByExpiryDateNullsFirst(@Param("inventoryId") Long inventoryId);
+    //유통기한 수정
+    @Modifying
+    @Query("UPDATE stockBatches sb SET sb.expiryDate = :newExpiryDate WHERE sb.id = :batchId")
+    int updateBatchExpiryDate(@Param("batchId") Long batchId,
+                              @Param("newExpiryDate") LocalDateTime newExpiryDate);
 
     // 지정 일수 내 임박 배치 조회
     @Query("SELECT sb FROM stockBatches sb " +
             "WHERE sb.expiryDate IS NOT NULL " +
             "AND sb.expiryDate <= :targetDate " +
-            "AND sb.expiryDate >= CURRENT_DATE " +
+            "AND sb.expiryDate >= CURRENT_TIMESTAMP " +
             "AND sb.quantity > 0 " +
             "ORDER BY sb.expiryDate ASC")
-    List<stockBatches> findUrgentBatchesByDays(@Param("targetDate") LocalDate targetDate);
+    List<stockBatches> findUrgentBatchesByDays(@Param("targetDate") LocalDateTime targetDate);
 
     // 만료된 배치 조회
     @Query("SELECT sb FROM stockBatches sb " +
             "WHERE sb.expiryDate IS NOT NULL " +
-            "AND sb.expiryDate < CURRENT_DATE " +
+            "AND sb.expiryDate < CURRENT_TIMESTAMP " +
             "AND sb.quantity > 0 " +
             "ORDER BY sb.expiryDate DESC")
     List<stockBatches> findExpiredBatches();
@@ -53,20 +59,20 @@ public interface StockBatchRepository extends JpaRepository<stockBatches, Long> 
             "WHERE sb.inventory.inventoryId = :inventoryId " +
             "AND sb.expiryDate IS NOT NULL " +
             "AND sb.quantity > 0")
-    LocalDate getEarliestExpiryDateByInventoryId(@Param("inventoryId") Long inventoryId);
+    LocalDateTime getEarliestExpiryDateByInventoryId(@Param("inventoryId") Long inventoryId);
 
     // 임박 배치 개수 조회
     @Query("SELECT COUNT(sb) FROM stockBatches sb " +
             "WHERE sb.expiryDate IS NOT NULL " +
             "AND sb.expiryDate <= :targetDate " +
-            "AND sb.expiryDate >= CURRENT_DATE " +
+            "AND sb.expiryDate >= CURRENT_TIMESTAMP " +
             "AND sb.quantity > 0")
-    Long countUrgentBatchesByDays(@Param("targetDate") LocalDate targetDate);
+    Long countUrgentBatchesByDays(@Param("targetDate") LocalDateTime targetDate);
 
     // 만료된 배치 개수 조회
     @Query("SELECT COUNT(sb) FROM stockBatches sb " +
             "WHERE sb.expiryDate IS NOT NULL " +
-            "AND sb.expiryDate < CURRENT_DATE " +
+            "AND sb.expiryDate < CURRENT_TIMESTAMP " +
             "AND sb.quantity > 0")
     Long countExpiredBatches();
 
@@ -80,10 +86,10 @@ public interface StockBatchRepository extends JpaRepository<stockBatches, Long> 
             "WHERE sb.inventory.category.categoryId = :categoryId " +
             "AND sb.expiryDate IS NOT NULL " +
             "AND sb.expiryDate <= :targetDate " +
-            "AND sb.expiryDate >= CURRENT_DATE " +
+            "AND sb.expiryDate >= CURRENT_TIMESTAMP " +
             "AND sb.quantity > 0")
     Long countUrgentBatchesByCategory(@Param("categoryId") Long categoryId,
-                                      @Param("targetDate") LocalDate targetDate);
+                                      @Param("targetDate") LocalDateTime targetDate);
 
     // 상품별 가장 오래된 배치 조회 (FIFO)
     @Query("SELECT sb FROM stockBatches sb " +
@@ -112,17 +118,17 @@ public interface StockBatchRepository extends JpaRepository<stockBatches, Long> 
                                                           @Param("startDate") LocalDate startDate,
                                                           @Param("endDate") LocalDate endDate);
 
-    // 배치 수량 업데이트
+    // 배치 수량 업데이트 +날짜
     @Modifying
-    @Query("UPDATE stockBatches sb SET sb.quantity = :newQuantity WHERE sb.id = :batchId")
-    int updateBatchQuantity(@Param("batchId") Long batchId, @Param("newQuantity") Integer newQuantity);
+    @Query("UPDATE stockBatches sb SET sb.quantity = :newQuantity, sb.expiryDate = :newExpiryDate WHERE sb.id = :batchId")
+    int updateBatch(@Param("batchId") Long batchId, @Param("newExpiryDate") LocalDateTime newExpiryDate,@Param("newQuantity") Integer newQuantity);
 
     // 엑셀
     // FIFO 처리를 위한 재고 배치 조회 (NULL 기한 우선)
     @Query("SELECT sb FROM stockBatches sb " +
             "WHERE sb.inventory.inventoryId = :inventoryId AND sb.quantity > 0 " +
             "ORDER BY CASE WHEN sb.expiryDate IS NULL THEN 0 ELSE 1 END, " +
-            "COALESCE(sb.expiryDate, :maxDate) ASC")
+            "sb.expiryDate ASC")
     List<stockBatches> findForFIFOProcessing(@Param("inventoryId") Long inventoryId  );
 
     // 상품별 총 수량 계산
@@ -141,6 +147,7 @@ public interface StockBatchRepository extends JpaRepository<stockBatches, Long> 
     @Query("DELETE FROM stockBatches sb " +
             "WHERE sb.quantity <= 0 AND sb.inventory.inventoryId = :inventoryId")
     void deleteEmptyBatchesByInventoryId(@Param("inventoryId") Long inventoryId);
+
 
     List<stockBatches> findExpiryBatchesByInventoryInventoryId(Long inventoryId);
 }

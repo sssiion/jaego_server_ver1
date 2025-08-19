@@ -1,6 +1,7 @@
 package org.example.jaego.Service;
 import org.example.jaego.Dto.*;
-
+import org.example.jaego.Entity.Category;
+import org.springframework.data.repository.query.Param;
 
 
 import java.util.List;
@@ -16,11 +17,15 @@ public interface CategoryService {
     // 새 카테고리 생성
     CategoryDto createCategory(CategoryCreateRequest request);
 
-    // 카테고리 수정
+    // 카테고리 수정 >> 카테고리 이름, 타입 변경
     CategoryDto updateCategory(Long categoryId, CategoryUpdateRequest request);
+    void updateCategories(List<Long> dto,String type);
 
     // 카테고리 삭제
     void deleteCategory(Long categoryId);
+
+
+    List<CategoryDto> findByCategoryName( String categoryName);
 
     // 카테고리별 재고 개수 조회
     Long getInventoryCountByCategory(Long categoryId);

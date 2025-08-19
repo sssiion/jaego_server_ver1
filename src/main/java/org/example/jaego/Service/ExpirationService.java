@@ -3,6 +3,7 @@ package org.example.jaego.Service;
 import org.example.jaego.Dto.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface ExpirationService {
@@ -23,7 +24,7 @@ public interface ExpirationService {
     List<UrgentBatchDto> getExpiringThisMonth();
 
     // 남은 일수 계산
-    Integer calculateDaysRemaining(LocalDate expiryDate);
+    Integer calculateDaysRemaining(LocalDateTime expiryDate);
 
     // 만료 알림 발송
     OperationResult sendExpirationAlerts(Integer days);

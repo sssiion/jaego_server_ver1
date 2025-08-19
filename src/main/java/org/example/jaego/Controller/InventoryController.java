@@ -4,6 +4,8 @@ package org.example.jaego.Controller;
 
 import lombok.RequiredArgsConstructor;
 
+import org.example.jaego.Entity.Category;
+import org.example.jaego.Service.CategoryService;
 import org.example.jaego.Service.InventoryService;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -12,13 +14,19 @@ import org.example.jaego.Dto.*;
 
 import java.util.List;
 
+@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/api/inventories")
 @RequiredArgsConstructor
 public class InventoryController {
 
     private final InventoryService inventoryService;
+    private final CategoryService categoryService;
 
+    @GetMapping("/category/{categoryId}")
+    public ResponseEntity<List<InventoryDto>> getAllInventory(@PathVariable Long categoryId){
+        return ResponseEntity.ok(inventoryService.getInventoryByCategory(categoryId));
+    }
     @GetMapping
     public List<InventoryDto> getAllInventories(Pageable pageable) {
         return inventoryService.getAllInventories(pageable).getContent();

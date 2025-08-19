@@ -15,4 +15,6 @@ public interface StockAdjustmentService {
 
     // 여러 상품 일괄 조정
     OperationResult bulkStockAdjustment(BulkAdjustmentRequest request);
+
+
 }

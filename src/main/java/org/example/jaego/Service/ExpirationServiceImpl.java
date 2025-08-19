@@ -12,6 +12,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.example.jaego.Dto.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -45,7 +47,7 @@ public class ExpirationServiceImpl implements ExpirationService {
                 .filter(inventory -> inventory.getCategory() != null &&
                         categoryIds.contains(inventory.getCategory().getCategoryId()))
                 .map(inventory -> {
-                    LocalDate earliestExpiry = stockBatchesRepository
+                    LocalDateTime earliestExpiry = stockBatchesRepository
                             .getEarliestExpiryDateByInventoryId(inventory.getInventoryId());
 
                     return UrgentInventoryDto.builder()
@@ -67,7 +69,7 @@ public class ExpirationServiceImpl implements ExpirationService {
                 .filter(inventory -> inventory.getName().toLowerCase()
                         .contains(keyword.toLowerCase()))
                 .map(inventory -> {
-                    LocalDate earliestExpiry = stockBatchesRepository
+                    LocalDateTime earliestExpiry = stockBatchesRepository
                             .getEarliestExpiryDateByInventoryId(inventory.getInventoryId());
 
                     return UrgentInventoryDto.builder()
@@ -106,8 +108,8 @@ public class ExpirationServiceImpl implements ExpirationService {
     @Override
     @Transactional(readOnly = true)
     public List<UrgentBatchDto> getExpiringThisWeek() {
-        LocalDate today = LocalDate.now();
-        LocalDate weekEnd = today.plusDays(7);
+        LocalDateTime today = LocalDateTime.now();
+        LocalDateTime weekEnd = today.plusDays(7);
 
         var batchesThisWeek = stockBatchesRepository.findUrgentBatchesByDays(weekEnd);
 
@@ -128,8 +130,8 @@ public class ExpirationServiceImpl implements ExpirationService {
     @Override
     @Transactional(readOnly = true)
     public List<UrgentBatchDto> getExpiringThisMonth() {
-        LocalDate today = LocalDate.now();
-        LocalDate monthEnd = today.plusDays(30);
+        LocalDateTime today = LocalDateTime.now();
+        LocalDateTime monthEnd = today.plusDays(30);
 
         var batchesThisMonth = stockBatchesRepository.findUrgentBatchesByDays(monthEnd);
 
@@ -148,16 +150,16 @@ public class ExpirationServiceImpl implements ExpirationService {
     }
 
     @Override
-    public Integer calculateDaysRemaining(LocalDate expiryDate) {
+    public Integer calculateDaysRemaining(LocalDateTime expiryDate) {
         if (expiryDate == null) return null;
 
-        long days = java.time.temporal.ChronoUnit.DAYS.between(LocalDate.now(), expiryDate);
+        long days = java.time.temporal.ChronoUnit.DAYS.between(LocalDateTime.now(), expiryDate);
         return (int) days;
     }
 
     @Override
     public OperationResult sendExpirationAlerts(Integer days) {
-        LocalDate targetDate = LocalDate.now().plusDays(days);
+        LocalDateTime targetDate = LocalDateTime.now().plusDays(days);
         var urgentBatches = stockBatchesRepository.findUrgentBatchesByDays(targetDate);
 
         List<String> sentAlerts = new ArrayList<>();
@@ -175,7 +177,7 @@ public class ExpirationServiceImpl implements ExpirationService {
                 notificationService.sendExpirationAlert(
                         batch.getInventory().getInventoryId(),
                         alertMessage,
-                        batch.getExpiryDate().atStartOfDay());
+                        batch.getExpiryDate().with(LocalTime.MIN));
 
                 sentAlerts.add(alertMessage);
                 successCount++;
@@ -224,7 +226,7 @@ public class ExpirationServiceImpl implements ExpirationService {
     @Override
     @Transactional(readOnly = true)
     public ExpirationRiskDto getProductsByRiskLevel() {
-        LocalDate today = LocalDate.now();
+        LocalDateTime today = LocalDateTime.now();
 
         // 고위험: 3일 이내
         var highRisk = stockBatchesRepository.findUrgentBatchesByDays(today.plusDays(3));
@@ -260,7 +262,7 @@ public class ExpirationServiceImpl implements ExpirationService {
     @Override
     @Transactional(readOnly = true)
     public ExpirationStatsDto getExpirationStats(Integer days) {
-        LocalDate targetDate = LocalDate.now().plusDays(days);
+        LocalDateTime targetDate = LocalDateTime.now().plusDays(days);
 
         // 임박 배치들
         var urgentBatches = stockBatchesRepository.findUrgentBatchesByDays(targetDate);

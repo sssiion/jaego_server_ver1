@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Data
 @Builder
@@ -14,6 +15,6 @@ public class UrgentBatchDto {
     private String inventoryName;
     private String categoryName;
     private Integer quantity;
-    private LocalDate expiryDate;
+    private LocalDateTime expiryDate;
     private Integer daysRemaining;
 }

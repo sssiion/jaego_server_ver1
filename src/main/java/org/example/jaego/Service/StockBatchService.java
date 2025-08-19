@@ -3,9 +3,12 @@ package org.example.jaego.Service;
 import org.example.jaego.Dto.*;
 
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface StockBatchService {
+
 
     // 재고별 배치 조회
     List<StockBatchDto> getBatchesByInventoryId(Long inventoryId);
@@ -19,8 +22,7 @@ public interface StockBatchService {
     // 새 배치 생성
     StockBatchDto createBatch(StockBatchCreateRequest request);
 
-    // 배치 수량 수정
-    StockBatchDto updateBatchQuantity(Long batchId, Integer newQuantity);
+
 
     // 배치 삭제
     void deleteBatch(Long batchId);
@@ -42,4 +44,8 @@ public interface StockBatchService {
 
     // 배치 상세 조회
     StockBatchDto getBatchById(Long batchId);
+
+
+    //배치 기한+수량 수정
+    void updateBatch(Long batchId, LocalDateTime newExpiryDate, Integer newQuantity);
 }

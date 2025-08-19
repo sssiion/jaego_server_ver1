@@ -67,6 +67,8 @@ public class StockAdjustmentServiceImpl implements StockAdjustmentService {
         return OperationResult.success("수량이 수정되었습니다.");
     }
 
+
+
     @Override
     public OperationResult bulkStockAdjustment(BulkAdjustmentRequest request) {
         List<String> results = new ArrayList<>();

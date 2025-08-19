@@ -16,6 +16,8 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/**").permitAll()
+                        .requestMatchers("/api/inventories/category/**").permitAll()
+                        .requestMatchers("/api/categories/**").permitAll()
                         .requestMatchers("/api/users/**").permitAll()  // 사용자 API 허용
                         .requestMatchers("/api/chatrooms/**").permitAll()  // 채팅방 API 허용
                         .requestMatchers("/api/chatrooms?**").permitAll()

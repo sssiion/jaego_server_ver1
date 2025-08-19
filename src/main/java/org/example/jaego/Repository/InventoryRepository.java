@@ -1,6 +1,9 @@
 package org.example.jaego.Repository;
 
+import org.example.jaego.Entity.Category;
 import org.example.jaego.Entity.Inventory;
+import org.example.jaego.Entity.stockBatches;
+import org.hibernate.engine.jdbc.batch.spi.Batch;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -21,6 +24,7 @@ public interface InventoryRepository extends JpaRepository<Inventory, Long> {
             "ORDER BY MIN(COALESCE(sb.expiryDate, '9999-12-31'))")
     List<Inventory> findByCategoryIdOrderByEarliestExpiryDate(@Param("categoryId") Long categoryId);
 
+    Inventory findInventoriesByStockBatchesContains(stockBatches batch);
     // 카테고리별 상품 검색
     List<Inventory> findByCategoryCategoryIdAndNameContainingIgnoreCaseOrderByName(Long categoryId, String name);
 
@@ -32,6 +36,9 @@ public interface InventoryRepository extends JpaRepository<Inventory, Long> {
             "ORDER BY MIN(COALESCE(sb.expiryDate, '9999-12-31'))")
     List<Inventory> findByNameContainingIgnoreCaseOrderByEarliestExpiryDate(@Param("keyword") String keyword);
 
+
+    // InventoryRepository.java
+    List<Inventory> findByCategory_CategoryId(Long categoryId);
     // 상품명으로 정확 검색
     Optional<Inventory> findByName(String name);
 

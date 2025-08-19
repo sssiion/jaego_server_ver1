@@ -14,7 +14,7 @@ public class StockBatchDto {
     private Long inventoryId;
     private String inventoryName;
     private Integer quantity;
-    private LocalDate expiryDate;
+    private LocalDateTime expiryDate;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }

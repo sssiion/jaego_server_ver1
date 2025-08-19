@@ -4,8 +4,10 @@ package org.example.jaego.Service;
 
 import org.example.jaego.Dto.*;
 
+import org.example.jaego.Entity.Category;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 
@@ -25,7 +27,9 @@ public interface InventoryService {
 
     // 재고 정보 수정
     InventoryDto updateInventory(Long inventoryId, InventoryUpdateRequest request);
+    // 카테고리로 재고 가져오기
 
+    List<InventoryDto> getInventoryByCategory(Long categoryId);
     // 재고 삭제
     void deleteInventory(Long inventoryId);
 

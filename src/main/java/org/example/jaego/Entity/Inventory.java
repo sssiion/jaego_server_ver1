@@ -33,7 +33,6 @@ public class Inventory {
     private Category category; // nullable = true (기본값)
 
     @Column(name = "total_quantity", nullable = false)
-    @Min(value = 0)
     private Integer totalQuantity;
 
     @CreationTimestamp

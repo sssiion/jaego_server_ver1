@@ -23,12 +23,12 @@ public class ExcelParsingService {
         List<StockExcelRowDto> stockRows = new ArrayList<>();
         try (Workbook workbook = new XSSFWorkbook(file.getInputStream())) {
             Sheet sheet = workbook.getSheetAt(0);
-            for (int i = 1; i <= sheet.getLastRowNum(); i++) { // 0행은 헤더
+            for (int i = 2; i <= sheet.getLastRowNum(); i++) { // 0행은 헤더
                 Row row = sheet.getRow(i);
                 if (row == null || isEmptyRow(row)) continue;
                 StockExcelRowDto dto = new StockExcelRowDto();
                 dto.setProductName(getString(row.getCell(0)));
-                dto.setSalesQuantity(getInt(row.getCell(4)));
+                dto.setSalesQuantity(getInt(row.getCell(3)));
                 dto.setRemainingStock(getInt(row.getCell(10)));
                 stockRows.add(dto);
             }
@@ -48,7 +48,7 @@ public class ExcelParsingService {
                 OrderExcelRowDto dto = new OrderExcelRowDto();
                 dto.setCategoryName(getString(row.getCell(0)));
                 dto.setProductName(getString(row.getCell(1)));
-                dto.setOrderQuantity(getInt(row.getCell(4)));
+                dto.setOrderQuantity(getInt(row.getCell(3)));
                 orderRows.add(dto);
             }
         } catch (IOException e) {

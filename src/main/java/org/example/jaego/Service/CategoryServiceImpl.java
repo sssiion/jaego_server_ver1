@@ -9,6 +9,7 @@ import org.example.jaego.Exception.DuplicateCategoryException;
 import org.example.jaego.Repository.CategoryRepository;
 import org.example.jaego.Repository.StockBatchRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,6 +25,15 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Autowired
     private StockBatchRepository stockBatchesRepository;
+
+    @Override
+    public List<CategoryDto> findByCategoryName(String categoryName){
+        List<Category> categoryList = categoryRepository.findByCategoryTypeOrderByCategory(categoryName);
+        return categoryList.stream()
+                            .map(this::convertToDto)
+                            .collect(Collectors.toList());
+
+    }
 
     @Override
     @Transactional(readOnly = true)
@@ -75,6 +85,16 @@ public class CategoryServiceImpl implements CategoryService {
         Category savedCategory = categoryRepository.save(category);
         return convertToDto(savedCategory);
     }
+    @Override
+    public void updateCategories(List<Long> dto, String type){
+        for (Long id : dto) {
+            Category category = categoryRepository.findById(id)
+                            .orElseThrow(() -> new CategoryNotFoundException("카테고리를 찾을 수 없습니다: " + id));
+            category.setCategoryType(type);
+            categoryRepository.save(category);
+        }
+    }
+
 
     @Override
     public CategoryDto updateCategory(Long categoryId, CategoryUpdateRequest request) {
@@ -123,7 +143,7 @@ public class CategoryServiceImpl implements CategoryService {
         Long inventoryCount = categoryRepository.countInventoriesByCategoryId(categoryId);
         Integer totalQuantity = stockBatchesRepository.getTotalQuantityByCategory(categoryId);
         Long urgentBatchCount = stockBatchesRepository.countUrgentBatchesByCategory(categoryId,
-                java.time.LocalDate.now().plusDays(7));
+                java.time.LocalDateTime.now().plusDays(7));
 
         return CategoryStatsDto.builder()
                 .categoryId(categoryId)
@@ -174,4 +194,6 @@ public class CategoryServiceImpl implements CategoryService {
                 .updatedAt(category.getUpdatedAt())
                 .build();
     }
+
+
 }

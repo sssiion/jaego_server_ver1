@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.example.jaego.Dto.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -49,6 +50,11 @@ public class InventoryServiceImpl implements InventoryService {
                 .map(this::convertToDto)
                 .collect(Collectors.toList());
     }
+    @Override
+    public List<InventoryDto> getInventoryByCategory(Long categoryId){
+         List<Inventory> inventories = inventoryRepository.findByCategory_CategoryId(categoryId);
+         return inventories.stream().map(inventory -> convertToDto(inventory)).collect(Collectors.toList());
+    }
 
     @Override
     @Transactional(readOnly = true)
@@ -58,7 +64,7 @@ public class InventoryServiceImpl implements InventoryService {
 
         return inventories.stream()
                 .map(inventory -> {
-                    LocalDate earliestExpiry = stockBatchesRepository
+                    LocalDateTime earliestExpiry = stockBatchesRepository
                             .getEarliestExpiryDateByInventoryId(inventory.getInventoryId());
 
                     return InventorySearchDto.builder()
@@ -163,8 +169,8 @@ public class InventoryServiceImpl implements InventoryService {
         Inventory inventory = inventoryRepository.findById(inventoryId)
                 .orElseThrow(() -> new InventoryNotFoundException("재고를 찾을 수 없습니다: " + inventoryId));
 
-        LocalDate earliestExpiry = stockBatchesRepository.getEarliestExpiryDateByInventoryId(inventoryId);
-        Long urgentBatchCount = stockBatchesRepository.countUrgentBatchesByDays(LocalDate.now().plusDays(7));
+        LocalDateTime earliestExpiry = stockBatchesRepository.getEarliestExpiryDateByInventoryId(inventoryId);
+        Long urgentBatchCount = stockBatchesRepository.countUrgentBatchesByDays(LocalDateTime.now().plusDays(7));
 
         return InventorySummaryDto.builder()
                 .inventoryId(inventory.getInventoryId())
@@ -183,7 +189,7 @@ public class InventoryServiceImpl implements InventoryService {
 
         return inventories.stream()
                 .map(inventory -> {
-                    LocalDate earliestExpiry = stockBatchesRepository
+                    LocalDateTime earliestExpiry = stockBatchesRepository
                             .getEarliestExpiryDateByInventoryId(inventory.getInventoryId());
 
                     return UrgentInventoryDto.builder()
