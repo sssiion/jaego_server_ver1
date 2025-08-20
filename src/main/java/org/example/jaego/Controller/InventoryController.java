@@ -23,10 +23,12 @@ public class InventoryController {
     private final InventoryService inventoryService;
     private final CategoryService categoryService;
 
+    // 카테고리 아이디로 가져오기
     @GetMapping("/category/{categoryId}")
     public ResponseEntity<List<InventoryDto>> getAllInventory(@PathVariable Long categoryId){
         return ResponseEntity.ok(inventoryService.getInventoryByCategory(categoryId));
     }
+
     @GetMapping
     public List<InventoryDto> getAllInventories(Pageable pageable) {
         return inventoryService.getAllInventories(pageable).getContent();

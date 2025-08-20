@@ -16,10 +16,12 @@ import java.util.Optional;
 @Repository
 public interface InventoryRepository extends JpaRepository<Inventory, Long> {
 
+
+
     // 카테고리별 상품 조회 (빠른 기한 순)
     @Query("SELECT i FROM Inventory i " +
             "LEFT JOIN i.stockBatches sb " +
-            "WHERE i.category.categoryId = :categoryId " +
+            "WHERE (:categoryId IS NULL AND i.category IS NULL) OR i.category.categoryId = :categoryId " +
             "GROUP BY i " +
             "ORDER BY MIN(COALESCE(sb.expiryDate, '9999-12-31'))")
     List<Inventory> findByCategoryIdOrderByEarliestExpiryDate(@Param("categoryId") Long categoryId);
