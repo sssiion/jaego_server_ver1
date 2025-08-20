@@ -38,6 +38,9 @@ public class InventoryServiceImpl implements InventoryService {
     @Override
     public InventoryDto setCategory(Long inventoryId, Long categoryId) {
         Inventory inventory = inventoryRepository.findById(inventoryId).orElse(null);
+        if(inventory == null) {
+            return null;
+        }
         inventory.setCategory(categoryRepository.findById(categoryId).orElse(null));
         inventoryRepository.save(inventory);
 
