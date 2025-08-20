@@ -22,6 +22,7 @@ public class InventoryDto {
     public InventoryDto(Inventory inventory) {
         this.inventoryId = inventory.getInventoryId();
         this.name = inventory.getName();
+        this.categoryName = inventory.getCategory().getCategory();
         this.categoryId = inventory.getCategory().getCategoryId();
         this.totalQuantity = inventory.getTotalQuantity();
         this.createdAt = inventory.getCreatedAt();
