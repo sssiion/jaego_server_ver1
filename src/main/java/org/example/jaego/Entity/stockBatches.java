@@ -28,7 +28,7 @@ public class stockBatches {
     @Column(nullable = false)
     private Integer quantity;
 
-    @Column(name = "expiry_date")
+    @Column(name = "expiry_date", unique = true)
     private LocalDateTime expiryDate; // 유통기한
 
     @CreationTimestamp

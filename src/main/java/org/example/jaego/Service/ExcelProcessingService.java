@@ -59,7 +59,7 @@ public class ExcelProcessingService {
             if (inv.getTotalQuantity() < r.getSalesQuantity()) {
                 //errors.add("재고 부족: "+r.getProductName()); continue;
             }
-            reduceFIFO(inv.getInventoryId(), r.getSalesQuantity());
+            //reduceFIFO(inv.getInventoryId(), r.getSalesQuantity());
             inv.setTotalQuantity(r.getRemainingStock());
             invRepo.save(inv);
             batchAutoService.adjustBatchesToTotalQuantity(inv.getInventoryId());
