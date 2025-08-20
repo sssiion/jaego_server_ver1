@@ -140,7 +140,7 @@ public class ExcelProcessingService {
                 remain=0;
             }
         }
-        if (remain>0) throw new IllegalStateException("재고 부족 "+remain);
+        //if (remain>0) throw new IllegalStateException("재고 부족 "+remain);
     }
 
     private void addBatch(Long invId, int qty, java.time.LocalDateTime expiry) {
