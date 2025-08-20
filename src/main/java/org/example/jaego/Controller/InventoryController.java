@@ -23,6 +23,12 @@ public class InventoryController {
     private final InventoryService inventoryService;
     private final CategoryService categoryService;
 
+    //카테고리 지정하기
+    @GetMapping("/category/{categoryId}")
+    public ResponseEntity<InventoryDto> setCategory(@RequestParam(required = false) Long inventoryId, @PathVariable Long categoryId) {
+        return ResponseEntity.ok(inventoryService.setCategory(inventoryId, categoryId));
+    }
+
     // 카테고리 아이디로 가져오기
     @GetMapping("/category")
     public ResponseEntity<List<InventoryDto>> getAllInventory(@RequestParam(required = false) Long categoryId){

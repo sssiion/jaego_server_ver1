@@ -50,4 +50,6 @@ public interface InventoryService {
 
     // 모든 재고 조회
     Page<InventoryDto> getAllInventories(Pageable pageable);
+
+    InventoryDto setCategory(Long inventoryId, Long categoryId);
 }

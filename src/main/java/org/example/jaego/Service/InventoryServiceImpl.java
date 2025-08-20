@@ -25,6 +25,7 @@ import java.util.stream.Collectors;
 @Transactional
 public class InventoryServiceImpl implements InventoryService {
 
+
     @Autowired
     private InventoryRepository inventoryRepository;
 
@@ -34,6 +35,14 @@ public class InventoryServiceImpl implements InventoryService {
     @Autowired
     private StockBatchRepository stockBatchesRepository;
 
+    @Override
+    public InventoryDto setCategory(Long inventoryId, Long categoryId) {
+        Inventory inventory = inventoryRepository.findById(inventoryId).orElse(null);
+        inventory.setCategory(categoryRepository.findById(categoryId).orElse(null));
+        inventoryRepository.save(inventory);
+
+        return  new InventoryDto(inventory);
+    }
     @Override
     @Transactional(readOnly = true)
     public List<InventoryDto> getInventoriesByCategory(Long categoryId, String searchKeyword) {
