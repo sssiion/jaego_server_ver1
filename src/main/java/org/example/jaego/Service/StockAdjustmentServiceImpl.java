@@ -58,9 +58,9 @@ public class StockAdjustmentServiceImpl implements StockAdjustmentService {
         Inventory inventory = inventoryRepository.findById(request.getInventoryId())
                 .orElseThrow(() -> new InventoryNotFoundException("재고를 찾을 수 없습니다."));
 
-        //if (request.getQuantity() < 0) {
-         //   throw new InsufficientStockException("수량은 0 이상이어야 합니다.");
-        //}
+        if (request.getQuantity() < 0) {
+            throw new InsufficientStockException("수량은 0 이상이어야 합니다.");
+        }
 
         inventory.setTotalQuantity(request.getQuantity());
         inventoryRepository.save(inventory);
@@ -75,15 +75,15 @@ public class StockAdjustmentServiceImpl implements StockAdjustmentService {
         for (StockAdjustmentRequest adj : request.getAdjustments()) {
             try {
                 adjustStockQuantity(adj);
-                //results.add("재고 ID " + adj.getInventoryId() + " 수정 성공");
+                results.add("재고 ID " + adj.getInventoryId() + " 수정 성공");
             } catch (Exception e) {
                 results.add("재고 ID " + adj.getInventoryId() + " 수정 실패: " + e.getMessage());
             }
         }
         return OperationResult.builder()
                 .success(true)
-                .details(results)//.message("일괄 재고 조정 완료");
+                .message("일괄 재고 조정 완료")
+                .details(results)
                 .build();
-
     }
 }
