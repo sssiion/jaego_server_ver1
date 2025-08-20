@@ -1,9 +1,6 @@
 package org.example.jaego.Dto;
 
-import lombok.Builder;
-import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.example.jaego.Entity.Inventory;
 
 import java.time.LocalDateTime;
@@ -12,6 +9,8 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class InventoryDto {
     private Long inventoryId;
     private String name;
