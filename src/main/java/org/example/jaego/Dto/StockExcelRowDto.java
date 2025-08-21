@@ -12,7 +12,7 @@ public class StockExcelRowDto {
     private Integer salesQuantity;   // 판매수량(빼야할 수량)
     private Integer remainingStock;  // 총수량(남겨야 할 수량)
 
-
+    @Builder.Default
     private boolean isValid = true;  // 검증 여부
     private String errorMessage;     // 검증 실패 메시지
 }

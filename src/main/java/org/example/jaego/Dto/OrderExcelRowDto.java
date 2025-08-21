@@ -16,6 +16,7 @@ public class OrderExcelRowDto {
     private Integer remainQuantity;
     private LocalDateTime expiryDate;    // 유통기한 (선택사항)
 
+    @Builder.Default
     private boolean isValid = true;
     private String errorMessage;
 }
