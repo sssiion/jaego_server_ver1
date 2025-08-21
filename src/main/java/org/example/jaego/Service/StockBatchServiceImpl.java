@@ -171,13 +171,16 @@ public class StockBatchServiceImpl implements StockBatchService {
         for (stockBatches batch : batches) {
             if (remainingQuantity <= 0) break;
 
-            int availableQuantity = batch.getQuantity();
+            int availableQuantity = batch.getQuantity(); // getQuantity가 만약 0이야? 그럼 삭제
             int reduceAmount = Math.min(remainingQuantity, availableQuantity);
 
             int result = stockBatchesRepository.reduceQuantity(batch.getId(), reduceAmount);
             if (result > 0) {
                 remainingQuantity -= reduceAmount;
                 processedBatches.add("Batch ID: " + batch.getId() + ", 차감량: " + reduceAmount);
+            }
+            if( availableQuantity == 0) { // 삭제 코드
+                stockBatchesRepository.deleteById(batch.getId());
             }
 
         }
