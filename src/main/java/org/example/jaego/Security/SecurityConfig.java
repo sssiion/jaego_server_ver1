@@ -1,7 +1,9 @@
 package org.example.jaego.Security;
 
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.web.SecurityFilterChain;
@@ -19,6 +21,7 @@ public class SecurityConfig {
 
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/api/**").permitAll()
                         .requestMatchers("/api/inventories/category/**").permitAll()
                         .requestMatchers("/api/categories/**").permitAll()
@@ -40,11 +43,27 @@ public class SecurityConfig {
                     return corsConfig;
 
                 }))
+                .exceptionHandling(ex ->
+                        ex.accessDeniedHandler((request, response, accessDeniedException) -> {
+                            setCorsHeaders(response);
+                            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                        }).authenticationEntryPoint((request, response, authException) -> {
+                            setCorsHeaders(response);
+                            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                        })
+                )
                 .headers(headers -> headers
                         .frameOptions(frame -> frame.deny()) // X-Frame-Options 설정
                 );
         return http.build();
 
 
+    }
+    // 에러 시에도 CORS 헤더를 응답에 추가하는 헬퍼 메서드
+    private void setCorsHeaders(HttpServletResponse response) {
+        response.setHeader("Access-Control-Allow-Origin", "https://sssiion.github.io");
+        response.setHeader("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS");
+        response.setHeader("Access-Control-Allow-Headers", "*");
+        response.setHeader("Access-Control-Allow-Credentials", "false");
     }
 }
