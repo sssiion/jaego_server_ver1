@@ -70,12 +70,36 @@ public class ExcelParsingService {
 
     private Integer getInt(Cell cell) {
         if (cell == null) return 0;
-        return switch (cell.getCellType()) {
-            case NUMERIC -> (int) cell.getNumericCellValue();
-            case STRING -> Integer.parseInt(cell.getStringCellValue().replace(",", ""));
-            default -> 0;
-        };
+        try {
+            switch (cell.getCellType()) {
+                case NUMERIC:
+                    double value = cell.getNumericCellValue();
+                    // 소수점 있거나 음수면 0 반환
+                    if (value < 0 || value != (int) value) {
+                        return 0;
+                    }
+                    return (int) value;
+
+                case STRING :
+                    String str = cell.getStringCellValue().replace(",", "").trim();
+                    // 숫자가 아니거나 소수/음수인지 체크
+                    try {
+                        double dbl = Double.parseDouble(str);
+                        if (dbl < 0 || dbl != (int) dbl) {
+                            return 0;
+                        }
+                        return Integer.parseInt(str);
+                    } catch (NumberFormatException e) {
+                        return 0;
+                    }
+                default:
+                    return 0;
+            }
+        } catch (Exception e) {
+            return 0;  // 예외 발생 시 0으로 처리
+        }
     }
+
 
     private boolean isEmptyRow(Row row) {
         return getString(row.getCell(0)).isEmpty();
