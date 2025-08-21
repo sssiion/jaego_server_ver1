@@ -107,7 +107,7 @@ public class ExcelProcessingService {
                     newTotal = addOrder + remain;
                 } else {
                     // 일치 안하면 전 수량으로 저장
-                    newTotal = oldTotal;
+                    newTotal = remain;
                 }
                 if (inv==null) {
                     inv = invRepo.save(Inventory.builder().name(r.getProductName())
