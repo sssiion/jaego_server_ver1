@@ -5,6 +5,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.cors.CorsConfiguration;
+
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -12,7 +15,8 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        return http
+        http
+
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/**").permitAll()
@@ -26,9 +30,21 @@ public class SecurityConfig {
                         .requestMatchers("/", "/health").permitAll()  // 루트, 헬스체크 허용
                         .anyRequest().permitAll()  // 나머지도 모두 허용
                 )
+                .cors(cors-> cors.configurationSource(request -> {
+                    var corsConfig = new org.springframework.web.cors.CorsConfiguration();
+                    corsConfig.setAllowedOrigins(List.of("*"));
+                    corsConfig.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+                    corsConfig.setAllowedHeaders(List.of("*"));
+                    corsConfig.setAllowCredentials(false);
+                    corsConfig.setMaxAge(3600L);
+                    return corsConfig;
+
+                }))
                 .headers(headers -> headers
                         .frameOptions(frame -> frame.deny()) // X-Frame-Options 설정
-                )
-                .build();
+                );
+        return http.build();
+
+
     }
 }
