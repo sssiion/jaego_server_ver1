@@ -174,6 +174,24 @@ public class InventoryServiceImpl implements InventoryService {
         inventory.setTotalQuantity(totalQuantity != null ? totalQuantity : 0);
         inventoryRepository.save(inventory);
     }
+    @Override
+    public List<StockBatchDto> findBatchesExpiringWithin(int minutes) {
+        // 1. 조회 범위 설정
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime futureLimit = now.plusMinutes(minutes);
+
+        // 2. Repository 메소드 호출
+        // "수량이 0보다 크고, 유통기한이 지금(now)과 30분 후(futureLimit) 사이인 모든 배치"를 조회
+        return stockBatchesRepository.findByQuantityGreaterThanAndExpiryDateBetween(0, now, futureLimit)
+                .stream()
+                .map(batch -> StockBatchDto.builder() // 3. 조회 결과를 DTO로 변환
+                        .id(batch.getId())
+                        .inventoryName(batch.getInventory().getName())
+                        .quantity(batch.getQuantity())
+                        .expiryDate(batch.getExpiryDate())
+                        .build())
+                .collect(Collectors.toList());
+    }
 
     @Override
     @Transactional(readOnly = true)

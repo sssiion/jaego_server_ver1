@@ -88,7 +88,7 @@ public class ExpirationServiceImpl implements ExpirationService {
     @Override
     @Transactional(readOnly = true)
     public List<ExpiredBatchDto> getExpiringToday() {
-        LocalDate today = LocalDate.now();
+        LocalDateTime today = LocalDateTime.now();
         var batchesToday = stockBatchesRepository.findBatchesExpiringBetween(today, today);
 
         return batchesToday.stream()
@@ -253,7 +253,7 @@ public class ExpirationServiceImpl implements ExpirationService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<UrgentBatchDto> getExpiringInPeriod(LocalDate startDate, LocalDate endDate) {
+    public List<UrgentBatchDto> getExpiringInPeriod(LocalDateTime startDate, LocalDateTime endDate) {
         var batches = stockBatchesRepository.findBatchesExpiringBetween(startDate, endDate);
 
         return convertToUrgentBatchDtos(batches);

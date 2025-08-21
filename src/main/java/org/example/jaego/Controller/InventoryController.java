@@ -70,4 +70,12 @@ public class InventoryController {
     public List<UrgentInventoryDto> getUrgentInventories(@RequestParam(defaultValue = "7") Integer days) {
         return inventoryService.findInventoriesWithUrgentBatches(days);
     }
+    // 만료 임박 제품
+    @GetMapping("/expiring-soon")
+    public ResponseEntity<List<StockBatchDto>> getExpiringSoonBatches(
+            @RequestParam(defaultValue = "30") int minutes) {
+
+        List<StockBatchDto> expiringBatches = inventoryService.findBatchesExpiringWithin(minutes);
+        return ResponseEntity.ok(expiringBatches);
+    }
 }

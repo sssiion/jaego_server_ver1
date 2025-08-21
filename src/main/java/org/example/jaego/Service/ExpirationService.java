@@ -36,8 +36,10 @@ public interface ExpirationService {
     ExpirationRiskDto getProductsByRiskLevel();
 
     // 특정 기간 만료 상품 조회
-    List<UrgentBatchDto> getExpiringInPeriod(LocalDate startDate, LocalDate endDate);
+    List<UrgentBatchDto> getExpiringInPeriod(LocalDateTime startDate, LocalDateTime endDate);
 
     // 만료 통계 조회
     ExpirationStatsDto getExpirationStats(Integer days);
+
+
 }

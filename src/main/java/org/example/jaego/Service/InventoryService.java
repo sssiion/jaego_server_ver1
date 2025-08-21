@@ -52,4 +52,6 @@ public interface InventoryService {
     Page<InventoryDto> getAllInventories(Pageable pageable);
 
     InventoryDto setCategory(Long inventoryId, Long categoryId);
+    // 몇 분 이내 만료 배치
+    List<StockBatchDto> findBatchesExpiringWithin(int minutes);
 }

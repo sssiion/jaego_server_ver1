@@ -13,6 +13,8 @@ import java.util.List;
 
 @Repository
 public interface StockBatchRepository extends JpaRepository<stockBatches, Long> {
+
+
     // 상품별 배치 조회 (NULL 기한 우선)
     @Query("SELECT sb FROM stockBatches sb " +
             "WHERE sb.inventory.inventoryId = :inventoryId " +
@@ -46,8 +48,8 @@ public interface StockBatchRepository extends JpaRepository<stockBatches, Long> 
             "WHERE sb.expiryDate BETWEEN :startDate AND :endDate " +
             "AND sb.quantity > 0 " +
             "ORDER BY sb.expiryDate ASC")
-    List<stockBatches> findBatchesExpiringBetween(@Param("startDate") LocalDate startDate,
-                                                  @Param("endDate") LocalDate endDate);
+    List<stockBatches> findBatchesExpiringBetween(@Param("startDate") LocalDateTime startDate,
+                                                  @Param("endDate") LocalDateTime endDate);
 
     // 상품별 총 수량 조회
     @Query("SELECT COALESCE(SUM(sb.quantity), 0) FROM stockBatches sb " +
@@ -143,7 +145,7 @@ public interface StockBatchRepository extends JpaRepository<stockBatches, Long> 
     List<stockBatches> findNullExpiryBatchesByInventoryId(@Param("inventoryId") Long inventoryId);
     // 유통기한 없는(Null) 배치 조회
     @Query("SELECT sb FROM stockBatches sb " +
-            "WHERE sb.expiryDate IS NULL AND sb.quantity > 0")
+            "WHERE sb.expiryDate IS NULL AND sb.quantity > 0" )
     List<stockBatches> findNullExpiryBatches();
 
 
@@ -155,4 +157,6 @@ public interface StockBatchRepository extends JpaRepository<stockBatches, Long> 
 
 
     List<stockBatches> findExpiryBatchesByInventoryInventoryId(Long inventoryId);
+
+    List<stockBatches> findByQuantityGreaterThanAndExpiryDateBetween(Integer quantity, LocalDateTime start, LocalDateTime end);
 }

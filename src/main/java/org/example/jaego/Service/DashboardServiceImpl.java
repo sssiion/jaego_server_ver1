@@ -125,12 +125,12 @@ public class DashboardServiceImpl implements DashboardService {
     }
 
     @Override
-    public List<ExpiryTrendDto> getExpiryTrendData(LocalDate startDate, LocalDate endDate) {
+    public List<ExpiryTrendDto> getExpiryTrendData(LocalDateTime startDate, LocalDateTime endDate) {
         List<ExpiryTrendDto> trendData = new ArrayList<>();
 
-        LocalDate currentDate = startDate;
+        LocalDateTime currentDate = startDate;
         while (!currentDate.isAfter(endDate)) {
-            LocalDate nextDate = currentDate.plusDays(1);
+            LocalDateTime nextDate = currentDate.plusDays(1);
 
             // 해당 날짜에 만료되는 배치들 조회
             var batchesExpiringOnDate = stockBatchesRepository
@@ -210,8 +210,8 @@ public class DashboardServiceImpl implements DashboardService {
     @Override
     public MonthlyReportDto getMonthlyExpiryReport(int year, int month) {
         YearMonth yearMonth = YearMonth.of(year, month);
-        LocalDate startDate = yearMonth.atDay(1);
-        LocalDate endDate = yearMonth.atEndOfMonth();
+        LocalDateTime startDate = yearMonth.atDay(1).atStartOfDay();
+        LocalDateTime endDate = yearMonth.atEndOfMonth().atStartOfDay();
 
         // 해당 월에 만료된 배치들
         var expiredBatches = stockBatchesRepository.findBatchesExpiringBetween(startDate, endDate);

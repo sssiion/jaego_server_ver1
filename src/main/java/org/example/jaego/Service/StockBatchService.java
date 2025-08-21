@@ -49,4 +49,7 @@ public interface StockBatchService {
 
     //배치 기한+수량 수정
     void updateBatch(Long batchId, LocalDateTime newExpiryDate, Integer newQuantity);
+
+    // 배치 오류 사항 수정
+    void SettingBatch();
 }

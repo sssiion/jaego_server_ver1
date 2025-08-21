@@ -4,6 +4,7 @@ import org.example.jaego.Dto.*;
 
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface DashboardService {
@@ -19,6 +20,8 @@ public interface DashboardService {
 
     // 만료 추세 데이터 조회
     List<ExpiryTrendDto> getExpiryTrendData(LocalDate startDate, LocalDate endDate);
+
+    List<ExpiryTrendDto> getExpiryTrendData(LocalDateTime startDate, LocalDateTime endDate);
 
     // 상위 임박 상품 조회
     List<UrgentInventoryDto> getTopUrgentProducts(Integer limit);

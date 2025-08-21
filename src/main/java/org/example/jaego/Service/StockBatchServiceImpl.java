@@ -1,5 +1,6 @@
 package org.example.jaego.Service;
 
+import lombok.RequiredArgsConstructor;
 import org.example.jaego.Entity.Inventory;
 import org.example.jaego.Entity.stockBatches;
 import org.example.jaego.Dto.*;
@@ -22,18 +23,14 @@ import java.util.stream.Collectors;
 
 @Service
 @Transactional
+@RequiredArgsConstructor
 public class StockBatchServiceImpl implements StockBatchService {
 
-    @Autowired
-    private StockBatchRepository stockBatchesRepository;
 
-    @Autowired
-    private InventoryRepository inventoryRepository;
-
-    @Autowired
-    private InventoryService inventoryService;
-    @Autowired
-    private StockBatchAutoService stockBatchAutoService;
+    private final StockBatchRepository stockBatchesRepository;
+    private final InventoryRepository inventoryRepository;
+    private final InventoryService inventoryService;
+    private final StockBatchAutoService stockBatchAutoService;
 
     @Override
     @Transactional(readOnly = true)
@@ -138,6 +135,30 @@ public class StockBatchServiceImpl implements StockBatchService {
         // 총 수량 업데이트
         inventoryService.updateTotalQuantity(inventoryId);
     }
+    @Override
+    public void SettingBatch(){
+        List<Inventory> inventories = inventoryRepository.findInventoriesWithQuantityMismatch();
+        inventories.forEach(inventory -> {
+            int currentBatchSum = inventory.getStockBatches().stream()
+                    .mapToInt(stockBatches::getQuantity)
+                    .sum();
+            // 4. 부족한 수량을 계산합니다. (목표 수량 - 현재 수량)
+            int missingQuantity = inventory.getTotalQuantity() - currentBatchSum;
+
+            // 5. 부족한 수량이 0보다 클 경우에만 새로운 배치를 생성합니다.
+            if (missingQuantity > 0) {
+                stockBatches nullExpiryBatch = stockBatches.builder()
+                        .inventory(inventory)       // 현재 재고와 연결
+                        .quantity(missingQuantity)  // 부족한 수량만큼 설정
+                        .expiryDate(null)           // 유통기한을 null로 설정
+                        .build();
+                // 6. 생성된 '유통기한 없음' 배치를 데이터베이스에 저장합니다.
+                stockBatchesRepository.save(nullExpiryBatch);
+            }
+
+        });
+
+    }
 
     @Override
     public OperationResult reduceStock(StockReductionRequest request) {
@@ -158,9 +179,7 @@ public class StockBatchServiceImpl implements StockBatchService {
                 remainingQuantity -= reduceAmount;
                 processedBatches.add("Batch ID: " + batch.getId() + ", 차감량: " + reduceAmount);
             }
-            if (batch.getQuantity() == 0){
-                stockBatchesRepository.deleteById(batch.getId());
-            }
+
         }
 
         if (remainingQuantity > 0) {

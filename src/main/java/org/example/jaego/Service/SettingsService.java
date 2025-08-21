@@ -13,4 +13,9 @@ public interface SettingsService {
 
     // 알림 주기 설정
     OperationResult setAlertFrequency(Long userId, String frequency);
+
+    UserSettingsDto getUserSettings(Long userId);
+
+    OperationResult updateUserSettings(Long userId, UserSettingsDto dto);
+
 }

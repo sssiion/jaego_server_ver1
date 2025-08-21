@@ -61,4 +61,8 @@ public class StockBatchController {
     public StockBatchDto addStock(@RequestBody StockAdditionRequest request) {
         return stockBatchService.addStock(request);
     }
+    @GetMapping("/setting")
+    public void settingStock(){
+         stockBatchService.SettingBatch();
+    }
 }

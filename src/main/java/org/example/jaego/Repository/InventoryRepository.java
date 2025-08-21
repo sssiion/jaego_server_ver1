@@ -1,5 +1,6 @@
 package org.example.jaego.Repository;
 
+import org.example.jaego.Dto.StockBatchDto;
 import org.example.jaego.Entity.Category;
 import org.example.jaego.Entity.Inventory;
 import org.example.jaego.Entity.stockBatches;
@@ -99,4 +100,14 @@ public interface InventoryRepository extends JpaRepository<Inventory, Long> {
     @Query("UPDATE Inventory i SET i.totalQuantity = :totalQuantity " +
             "WHERE i.inventoryId = :inventoryId")
     void updateTotalQuantity(@Param("inventoryId") Long inventoryId, @Param("totalQuantity") Integer totalQuantity);
+
+
+    @Query("SELECT i " +
+            "FROM Inventory i " +
+            "LEFT JOIN i.stockBatches b " + // stockBatches가 없는 Inventory도 포함하기 위해 LEFT JOIN 사용
+            "GROUP BY i.inventoryId, i.totalQuantity " + // 각 Inventory 별로 그룹화
+            // HAVING 절로 그룹화된 결과에 조건을 적용
+            // COALESCE(SUM(b.quantity), 0) : b.quantity 합계가 NULL이면 0으로 처리
+            "HAVING COALESCE(SUM(b.quantity), 0) < i.totalQuantity")
+    List<Inventory> findInventoriesWithQuantityMismatch();
 }

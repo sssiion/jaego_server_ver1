@@ -1,6 +1,7 @@
 package org.example.jaego.Service;
 
 
+import lombok.RequiredArgsConstructor;
 import org.example.jaego.Entity.UserSettings;
 import org.example.jaego.Dto.*;
 
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@RequiredArgsConstructor
 @Transactional
 public class SettingsServiceImpl implements SettingsService {
 
@@ -46,4 +48,37 @@ public class SettingsServiceImpl implements SettingsService {
         userSettingsRepository.save(settings);
         return OperationResult.success("알림 주기가 변경되었습니다.");
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public UserSettingsDto getUserSettings(Long userId) {
+        UserSettings settings = userSettingsRepository.findByUserId(userId)
+                .orElseGet(() -> createDefaultSettings(userId));
+        return mapToDto(settings);
+    }
+
+    @Override
+    public OperationResult updateUserSettings(Long userId, UserSettingsDto dto) {
+        UserSettings settings = userSettingsRepository.findByUserId(userId)
+                .orElseGet(() -> createDefaultSettings(userId));
+        settings.setAlertThreshold(dto.getAlertThreshold());
+        settings.setEnableExpiryAlerts(dto.getEnableExpiryAlerts());
+        // ... DTO의 다른 값들로 엔티티 업데이트 ...
+        userSettingsRepository.save(settings);
+        return OperationResult.success("사용자 설정이 업데이트되었습니다.");
+    }
+    private UserSettings createDefaultSettings(Long userId) {
+        return UserSettings.builder().userId(userId).build();
+
+    }
+    private UserSettingsDto mapToDto(UserSettings settings) {
+        return UserSettingsDto.builder()
+                .userId(settings.getUserId())
+                .alertThreshold(settings.getAlertThreshold())
+                .enableExpiryAlerts(settings.isExpiryAlertEnabled())
+                // ... 다른 필드 매핑 ...
+                .build();
+    }
+
+
 }
