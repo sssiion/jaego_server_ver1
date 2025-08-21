@@ -43,6 +43,7 @@ public class StockAdjustmentServiceImpl implements StockAdjustmentService {
         return OperationResult.success("재고가 추가되었습니다.");
     }
 
+
     @Override
     public OperationResult decreaseStock(StockAdjustmentRequest request) {
         return stockBatchService.reduceStock(

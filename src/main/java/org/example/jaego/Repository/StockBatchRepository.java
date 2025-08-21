@@ -136,11 +136,16 @@ public interface StockBatchRepository extends JpaRepository<stockBatches, Long> 
             "WHERE sb.inventory.inventoryId = :inventoryId")
     Integer calculateTotalQuantityByInventoryId(@Param("inventoryId") Long inventoryId);
 
-    // 유통기한 없는(Null) 배치 조회
+    // 유통기한 없는(Null) 배치 조회 - 카테고리
     @Query("SELECT sb FROM stockBatches sb " +
             "WHERE sb.inventory.inventoryId = :inventoryId " +
             "AND sb.expiryDate IS NULL AND sb.quantity > 0")
     List<stockBatches> findNullExpiryBatchesByInventoryId(@Param("inventoryId") Long inventoryId);
+    // 유통기한 없는(Null) 배치 조회
+    @Query("SELECT sb FROM stockBatches sb " +
+            "WHERE sb.expiryDate IS NULL AND sb.quantity > 0")
+    List<stockBatches> findNullExpiryBatches();
+
 
     // 수량 0 이하 배치 삭제
     @Modifying

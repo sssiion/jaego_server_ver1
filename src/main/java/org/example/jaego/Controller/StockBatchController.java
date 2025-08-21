@@ -20,6 +20,12 @@ public class StockBatchController {
 
     private final StockBatchService stockBatchService;
 
+    //배치 null 리스트 가져오기
+    @GetMapping("/null")
+    public ResponseEntity<List<StockBatchDto>> getnullBatches(){
+        return ResponseEntity.ok(stockBatchService.getnullBatches());
+    }
+
     //배치 리스트 가져오기
     @GetMapping("/inventory/{inventoryId}")
     public List<StockBatchDto> getBatchesByInventory(@PathVariable Long inventoryId) {

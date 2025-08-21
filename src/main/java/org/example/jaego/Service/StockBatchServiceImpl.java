@@ -158,6 +158,9 @@ public class StockBatchServiceImpl implements StockBatchService {
                 remainingQuantity -= reduceAmount;
                 processedBatches.add("Batch ID: " + batch.getId() + ", 차감량: " + reduceAmount);
             }
+            if (batch.getQuantity() == 0){
+                stockBatchesRepository.deleteById(batch.getId());
+            }
         }
 
         if (remainingQuantity > 0) {
@@ -166,6 +169,7 @@ public class StockBatchServiceImpl implements StockBatchService {
 
         // 빈 배치 삭제
         stockBatchesRepository.deleteEmptyBatches();
+
 
         // 총 수량 업데이트
         inventoryService.updateTotalQuantity(request.getInventoryId());
@@ -258,6 +262,11 @@ public class StockBatchServiceImpl implements StockBatchService {
                 .orElseThrow(() -> new StockBatchNotFoundException("배치를 찾을 수 없습니다: " + batchId));
 
         return convertToDto(batch);
+    }
+    //  null 배치 선언
+    @Override
+    public List<StockBatchDto> getnullBatches(){
+        return stockBatchesRepository.findNullExpiryBatches().stream().map(r -> convertToDto(r)).collect(Collectors.toList());
     }
 
     private StockBatchDto convertToDto(stockBatches batch) {

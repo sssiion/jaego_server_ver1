@@ -65,6 +65,8 @@ public interface InventoryRepository extends JpaRepository<Inventory, Long> {
     // 최근 업데이트된 상품 10개
     List<Inventory> findTop10ByOrderByUpdatedAtDesc();
 
+
+
     // 전체 상품 개수
     @Query("SELECT COUNT(i) FROM Inventory i")
     Long getTotalInventoryCount();

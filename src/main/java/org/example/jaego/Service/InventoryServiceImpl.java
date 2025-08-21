@@ -217,7 +217,7 @@ public class InventoryServiceImpl implements InventoryService {
                 })
                 .collect(Collectors.toList());
     }
-
+    // 최근 업데이트 된 거 조회
     @Override
     @Transactional(readOnly = true)
     public List<InventoryDto> getRecentlyUpdatedInventories() {

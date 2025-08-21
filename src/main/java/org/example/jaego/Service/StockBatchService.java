@@ -22,7 +22,8 @@ public interface StockBatchService {
     // 새 배치 생성
     StockBatchDto createBatch(StockBatchCreateRequest request);
 
-
+    // null 배치 가져오기
+    List<StockBatchDto> getnullBatches();
 
     // 배치 삭제
     void deleteBatch(Long batchId);
