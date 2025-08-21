@@ -101,10 +101,13 @@ public class ExcelProcessingService {
                 int addOrder = r.getOrderQuantity();     // 3번
                 int remain = r.getRemainQuantity();      // 6번
                 int oldTotal = inv != null ? inv.getTotalQuantity() : 0;
-                int newTotal=0;
+                int newTotal;
                 if (oldTotal == remain) {
                     // 3번 만큼만 늘어났다면 → 실제로 추가발주(3번)+남은수량(6번) 저장 (중복미반영)
                     newTotal = addOrder + remain;
+                } else {
+                    // 일치 안하면 전 수량으로 저장
+                    newTotal = oldTotal;
                 }
                 if (inv==null) {
                     inv = invRepo.save(Inventory.builder().name(r.getProductName())
