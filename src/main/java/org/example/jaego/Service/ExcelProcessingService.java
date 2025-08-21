@@ -98,12 +98,26 @@ public class ExcelProcessingService {
                             cName -> catRepo.save(Category.builder().category(cName).build()));
                 }
                 Inventory inv = invMap.get(r.getProductName());
+                int addOrder = r.getOrderQuantity();     // 3번
+                int remain = r.getRemainQuantity();      // 6번
+                int oldTotal = inv != null ? inv.getTotalQuantity() : 0;
+                int newTotal;
+                if (oldTotal == remain) {
+                    // 3번 만큼만 늘어났다면 → 실제로 추가발주(3번)+남은수량(6번) 저장 (중복미반영)
+                    newTotal = addOrder + remain;
+                } else {
+                    // 증감이 일치하지 않으면 남은수량(6번)만 저장
+                    newTotal = remain;
+                }
                 if (inv==null) {
                     inv = invRepo.save(Inventory.builder().name(r.getProductName())
-                            .category(cat).totalQuantity(r.getOrderQuantity()).build());
+                            .category(cat)
+                            .totalQuantity(newTotal)
+                            .build());
                     invMap.put(r.getProductName(), inv);
                 } else {
-                    inv.setTotalQuantity(inv.getTotalQuantity() + r.getOrderQuantity());
+                    //inv.setTotalQuantity(inv.getTotalQuantity() + r.getOrderQuantity());
+                    inv.setTotalQuantity(newTotal);
                     if (inv.getCategory()==null && cat!=null) inv.setCategory(cat);
                     invRepo.save(inv);
                 }

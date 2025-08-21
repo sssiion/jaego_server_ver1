@@ -49,6 +49,8 @@ public class ExcelParsingService {
                 dto.setCategoryName(getString(row.getCell(0)));
                 dto.setProductName(getString(row.getCell(1)));
                 dto.setOrderQuantity(getInt(row.getCell(3)));
+                dto.setRemainQuantity(getInt(row.getCell(6)));
+
                 orderRows.add(dto);
             }
         } catch (IOException e) {
