@@ -51,6 +51,7 @@ public interface InventoryRepository extends JpaRepository<Inventory, Long> {
     // 카테고리별 상품 개수
     Long countByCategoryCategoryId(Long categoryId);
 
+
     // 임박 배치가 있는 상품 조회
     @Query("""
             SELECT DISTINCT i

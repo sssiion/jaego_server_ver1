@@ -2,6 +2,8 @@ package org.example.jaego.Service;
 
 
 
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.example.jaego.Entity.Category;
 import org.example.jaego.Entity.Inventory;
 import org.example.jaego.Exception.CategoryNotFoundException;
@@ -22,18 +24,25 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
+@RequiredArgsConstructor
 @Transactional
 public class InventoryServiceImpl implements InventoryService {
 
 
-    @Autowired
-    private InventoryRepository inventoryRepository;
 
-    @Autowired
-    private CategoryRepository categoryRepository;
+    private final InventoryRepository inventoryRepository;
+    private final CategoryRepository categoryRepository;
+    private final StockBatchRepository stockBatchesRepository;
 
-    @Autowired
-    private StockBatchRepository stockBatchesRepository;
+    @Override
+    public void setUserId(Long userId) {
+        List<Inventory> inventories = inventoryRepository.findAll();
+        for (Inventory inventory : inventories) {
+            inventory.setUserId(userId);
+        }
+        log.info("userId change ok");
+    }
 
     @Override
     public InventoryDto setCategory(Long inventoryId, Long categoryId) {
