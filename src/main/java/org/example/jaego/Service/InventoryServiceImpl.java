@@ -36,7 +36,7 @@ public class InventoryServiceImpl implements InventoryService {
     private final StockBatchRepository stockBatchesRepository;
 
     @Override
-    public void setUserId(Long userId) {
+    public void setUserId(String userId) {
         List<Inventory> inventories = inventoryRepository.findAll();
         for (Inventory inventory : inventories) {
             inventory.setUserId(userId);
@@ -139,6 +139,7 @@ public class InventoryServiceImpl implements InventoryService {
 
         Inventory inventory = Inventory.builder()
                 .name(request.getName())
+                .userId("jjo")
                 .category(category)
                 .totalQuantity(0) // 초기 수량은 0
                 .build();

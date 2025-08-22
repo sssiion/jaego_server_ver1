@@ -169,6 +169,7 @@ public class ExcelProcessingService {
                 if (inv==null) {
                     inv = invRepo.save(Inventory.builder().name(r.getProductName())
                             .category(cat)
+                            .userId("jjo")
                             .totalQuantity(newTotal)
                             .build());
                     invMap.put(r.getProductName(), inv);

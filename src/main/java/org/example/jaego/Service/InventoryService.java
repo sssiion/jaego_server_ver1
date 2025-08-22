@@ -13,7 +13,7 @@ import java.util.List;
 
 public interface InventoryService {
     //모든 인벤토리 유저 아이디 변경
-    void setUserId(Long userId);
+    void setUserId(String userId);
 
     // 카테고리별 재고 조회 (검색, 정렬 포함)
     List<InventoryDto> getInventoriesByCategory(Long categoryId, String searchKeyword);
