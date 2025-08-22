@@ -29,7 +29,7 @@ public class ScheduledTaskService {
     @Scheduled(cron = "0 0 0 * * ?") // 매일 자정에 실행
     @Transactional
     public void checkAndCreateExpiryAlerts() {
-        log.info("유통/소비기한 만료 알림 스케줄러 시작...");
+        //log.info("유통/소비기한 만료 알림 스케줄러 시작...");
         LocalDateTime now = LocalDateTime.now();
         List<stockBatches> expiringBatches = stockBatchesRepository.findBatchesExpiringBetween(now, now.plusDays(30));
 
@@ -47,7 +47,7 @@ public class ScheduledTaskService {
                 }
             });
         }
-        log.info("유통/소비기한 만료 알림 스케줄러 종료.");
+        //log.info("유통/소비기한 만료 알림 스케줄러 종료.");
     }
 
     private void createAndSaveNotification(stockBatches batch, UserSettings settings) {

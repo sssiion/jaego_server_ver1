@@ -37,29 +37,29 @@ public class StockBatchAutoService {
         Integer targetTotal = inventory.getTotalQuantity();
         Integer difference = targetTotal - currentBatchTotal;
 
-        log.info("배치 조정 시작 - 재고 ID: {}, 상품명: '{}', 목표 총수량: {}, 현재 배치 합계: {}, 차이: {}",
-                inventoryId, inventory.getName(), targetTotal, currentBatchTotal, difference);
+        //log.info("배치 조정 시작 - 재고 ID: {}, 상품명: '{}', 목표 총수량: {}, 현재 배치 합계: {}, 차이: {}",
+         //       inventoryId, inventory.getName(), targetTotal, currentBatchTotal, difference);
 
         if (difference > 0) {
             // 부족한 수량만큼 null 배치 생성/추가
             addNullBatchForDifference(inventory, difference);
-            log.info("null 배치 {}개 추가 완료", difference);
+            //log.info("null 배치 {}개 추가 완료", difference);
 
         } else if (difference < 0) {
             // 초과 수량만큼 배치에서 FIFO 차감
             reduceBatchesForDifference(inventoryId, Math.abs(difference));
-            log.info("배치에서 {}개 차감 완료", Math.abs(difference));
+            //log.info("배치에서 {}개 차감 완료", Math.abs(difference));
 
         } else {
-            log.info("배치 수량이 이미 정확함 - 조정 불필요");
+            //log.info("배치 수량이 이미 정확함 - 조정 불필요");
         }
 
         // 총수량이 0이어도 Inventory는 보존
         if (targetTotal == 0) {
-            log.info("⚠️ 상품 '{}' 총수량이 0이지만 상품 정보는 보존됩니다", inventory.getName());
+            //log.info("⚠️ 상품 '{}' 총수량이 0이지만 상품 정보는 보존됩니다", inventory.getName());
         }
 
-        log.info("배치 조정 완료 - 재고 ID: {}", inventoryId);
+        //log.info("배치 조정 완료 - 재고 ID: {}", inventoryId);
     }
 
     /**
@@ -76,7 +76,7 @@ public class StockBatchAutoService {
             existingNullBatch.setQuantity(existingNullBatch.getQuantity() + addQuantity);
             stockBatchRepository.save(existingNullBatch);
 
-            log.debug("기존 null 배치에 {}개 추가 - 배치 ID: {}", addQuantity, existingNullBatch.getId());
+            //log.debug("기존 null 배치에 {}개 추가 - 배치 ID: {}", addQuantity, existingNullBatch.getId());
 
         } else {
             // 새로운 null 배치 생성
@@ -87,7 +87,7 @@ public class StockBatchAutoService {
                     .build();
 
             stockBatchRepository.save(newNullBatch);
-            log.debug("새로운 null 배치 {}개 생성 - 배치 ID: {}", addQuantity, newNullBatch.getId());
+            //log.debug("새로운 null 배치 {}개 생성 - 배치 ID: {}", addQuantity, newNullBatch.getId());
         }
     }
 
@@ -111,15 +111,15 @@ public class StockBatchAutoService {
                 // null 배치 전체 삭제
                 remainingToReduce -= nullBatch.getQuantity();
                 batchesToDelete.add(nullBatch);
-                log.debug("null 배치 {}개 전체 삭제 - 배치 ID: {}", nullBatch.getQuantity(), nullBatch.getId());
+                //log.debug("null 배치 {}개 전체 삭제 - 배치 ID: {}", nullBatch.getQuantity(), nullBatch.getId());
 
             } else {
                 // null 배치 일부 차감
                 nullBatch.setQuantity(nullBatch.getQuantity() - remainingToReduce);
                 batchesToUpdate.add(nullBatch);
-                log.debug("null 배치에서 {}개 차감 - 배치 ID: {}, 남은 수량: {}",
-                        remainingToReduce, nullBatch.getId(), nullBatch.getQuantity());
-                remainingToReduce = 0;
+                //log.debug("null 배치에서 {}개 차감 - 배치 ID: {}, 남은 수량: {}",
+                //        remainingToReduce, nullBatch.getId(), nullBatch.getQuantity());
+                //remainingToReduce = 0;
             }
         }
 
@@ -135,16 +135,16 @@ public class StockBatchAutoService {
                     // 배치 전체 삭제
                     remainingToReduce -= batch.getQuantity();
                     batchesToDelete.add(batch);
-                    log.debug("유통기한 배치({}) {}개 전체 삭제 - 배치 ID: {}",
-                            batch.getExpiryDate(), batch.getQuantity(), batch.getId());
+                    //log.debug("유통기한 배치({}) {}개 전체 삭제 - 배치 ID: {}",
+                    //        batch.getExpiryDate(), batch.getQuantity(), batch.getId());
 
                 } else {
                     // 배치 일부 차감
                     batch.setQuantity(batch.getQuantity() - remainingToReduce);
                     batchesToUpdate.add(batch);
-                    log.debug("유통기한 배치({})에서 {}개 차감 - 배치 ID: {}, 남은 수량: {}",
-                            batch.getExpiryDate(), remainingToReduce, batch.getId(), batch.getQuantity());
-                    remainingToReduce = 0;
+                    //log.debug("유통기한 배치({})에서 {}개 차감 - 배치 ID: {}, 남은 수량: {}",
+                    //        batch.getExpiryDate(), remainingToReduce, batch.getId(), batch.getQuantity());
+                    //remainingToReduce = 0;
                 }
             }
         }
@@ -152,17 +152,17 @@ public class StockBatchAutoService {
         // 배치 업데이트 및 삭제 실행
         if (!batchesToUpdate.isEmpty()) {
             stockBatchRepository.saveAll(batchesToUpdate);
-            log.debug("{}개 배치 수량 업데이트 완료", batchesToUpdate.size());
+            //log.debug("{}개 배치 수량 업데이트 완료", batchesToUpdate.size());
         }
 
         if (!batchesToDelete.isEmpty()) {
             stockBatchRepository.deleteAll(batchesToDelete);
-            log.debug("{}개 배치 삭제 완료", batchesToDelete.size());
+            //log.debug("{}개 배치 삭제 완료", batchesToDelete.size());
         }
 
         // 차감 완료 후에도 남은 수량이 있다면 경고
         if (remainingToReduce > 0) {
-            log.warn("⚠️ 배치 차감 완료했지만 {}개가 부족합니다 - 재고 ID: {}", remainingToReduce, inventoryId);
+            //log.warn("⚠️ 배치 차감 완료했지만 {}개가 부족합니다 - 재고 ID: {}", remainingToReduce, inventoryId);
         }
     }
 
