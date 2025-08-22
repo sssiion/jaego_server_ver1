@@ -175,27 +175,12 @@ public class StockBatchServiceImpl implements StockBatchService {
     }
     @Override
     public void SettingBatch(){
-        List<Inventory> inventories = inventoryRepository.findInventoriesWithQuantityMismatch();
-        inventories.forEach(inventory -> {
-            int currentBatchSum = inventory.getStockBatches().stream()
-                    .filter(b -> b.getQuantity() > 0)
-                    .mapToInt(stockBatches::getQuantity)
-                    .sum();
-            // 4. 부족한 수량을 계산합니다. (목표 수량 - 현재 수량)
-            int missingQuantity = inventory.getTotalQuantity() - currentBatchSum;
-
-            // 5. 부족한 수량이 0보다 클 경우에만 새로운 배치를 생성합니다.
-            if (missingQuantity > 0) {
-                stockBatches nullExpiryBatch = stockBatches.builder()
-                        .inventory(inventory)       // 현재 재고와 연결
-                        .quantity(missingQuantity)  // 부족한 수량만큼 설정
-                        .expiryDate(null)           // 유통기한을 null로 설정
-                        .build();
-                // 6. 생성된 '유통기한 없음' 배치를 데이터베이스에 저장합니다.
-                stockBatchesRepository.save(nullExpiryBatch);
+        List<stockBatches> batches = stockBatchesRepository.findAll();
+        for(stockBatches batch : batches) {
+            if(batch.getQuantity() == 0){
+                stockBatchesRepository.delete(batch);
             }
-
-        });
+        }
 
     }
 
