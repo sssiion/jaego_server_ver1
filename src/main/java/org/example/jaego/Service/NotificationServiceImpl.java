@@ -23,7 +23,7 @@ public class NotificationServiceImpl implements NotificationService {
     @Override
     public OperationResult sendExpirationAlert(Long inventoryId, String message, LocalDateTime expiryDate) {
         Notification notification = Notification.builder()
-                .userId(1L) // 예시용, 실제 구현 시 로그인 유저 ID
+                .userId(1234L) // 예시용, 실제 구현 시 로그인 유저 ID
                 .type("EXPIRY_ALERT")
                 .title("만료 예정 알림")
                 .message(message)

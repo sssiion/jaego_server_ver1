@@ -139,7 +139,7 @@ public class InventoryServiceImpl implements InventoryService {
 
         Inventory inventory = Inventory.builder()
                 .name(request.getName())
-                .userId("jjo")
+                .userId(1234L)
                 .category(category)
                 .totalQuantity(0) // 초기 수량은 0
                 .build();

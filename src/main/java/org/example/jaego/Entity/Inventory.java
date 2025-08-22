@@ -28,7 +28,7 @@ public class Inventory {
     private String name; // 먼저 생성 가능
 
     @Column(name = "user_id", nullable = false)
-    private String userId;
+    private Long userId;
     // 카테고리를 선택사항으로 변경
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id", referencedColumnName = "category_id")

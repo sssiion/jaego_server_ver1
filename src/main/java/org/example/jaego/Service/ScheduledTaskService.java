@@ -34,7 +34,7 @@ public class ScheduledTaskService {
         List<stockBatches> expiringBatches = stockBatchesRepository.findBatchesExpiringBetween(now, now.plusDays(30));
 
         for (stockBatches batch : expiringBatches) {
-            Long userId = batch.getInventory().getUserId();
+            String userId = batch.getInventory().getUserId();
             if (userId == null) continue;
 
             userSettingsRepository.findByUserId(userId).ifPresent(settings -> {
