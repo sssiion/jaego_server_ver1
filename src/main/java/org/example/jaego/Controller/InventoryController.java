@@ -26,7 +26,7 @@ public class InventoryController {
 
     @GetMapping("/userId/{ID}")
     public void setuserId(@PathVariable String ID){
-       inventoryService.setUserId(ID);
+       inventoryService.setUserId(Long.valueOf(ID));
     }
     //카테고리 지정하기
     @GetMapping("/category/{categoryId}")

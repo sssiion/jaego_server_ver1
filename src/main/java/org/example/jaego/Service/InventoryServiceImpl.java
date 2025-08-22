@@ -36,7 +36,7 @@ public class InventoryServiceImpl implements InventoryService {
     private final StockBatchRepository stockBatchesRepository;
 
     @Override
-    public void setUserId(String userId) {
+    public void setUserId(Long userId) {
         List<Inventory> inventories = inventoryRepository.findAll();
         for (Inventory inventory : inventories) {
             inventory.setUserId(userId);
