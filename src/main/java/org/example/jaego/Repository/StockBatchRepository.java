@@ -160,4 +160,15 @@ public interface StockBatchRepository extends JpaRepository<stockBatches, Long> 
     List<stockBatches> findExpiryBatchesByInventoryInventoryId(Long inventoryId);
 
     List<stockBatches> findByQuantityGreaterThanAndExpiryDateBetween(Integer quantity, LocalDateTime start, LocalDateTime end);
+    @Query("SELECT sb FROM stockBatches sb " +
+            "WHERE sb.quantity > 0 " +
+            "AND sb.expiryDate BETWEEN :now AND :futureLimit " +
+            "AND sb.inventory.category.categoryType = '소비'")
+    List<stockBatches> findConsumableBatchesExpiringWithin(LocalDateTime now, LocalDateTime futureLimit);
+    // 일 단위, 유통 카테고리 타입 필터
+    @Query("SELECT sb FROM stockBatches sb " +
+            "WHERE sb.quantity > 0 " +
+            "AND sb.expiryDate BETWEEN :now AND :futureLimit " +
+            "AND sb.inventory.category.categoryType = '유통'")
+    List<stockBatches> findDistributableBatchesExpiringWithin(LocalDateTime now, LocalDateTime futureLimit);
 }

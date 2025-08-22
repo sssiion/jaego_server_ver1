@@ -33,6 +33,44 @@ public class StockBatchServiceImpl implements StockBatchService {
     private final StockBatchAutoService stockBatchAutoService;
 
     @Override
+    public List<StockBatchDto> findBatchesExpiringWithinMinutesForConsumable(int minutes){
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime futureLimit = now.plusMinutes(minutes);
+
+        List<stockBatches> batches = stockBatchesRepository.findConsumableBatchesExpiringWithin(now, futureLimit);
+        return batches.stream()
+                .map(batch -> StockBatchDto.builder()
+                        .id(batch.getId())
+                        .inventoryId(batch.getInventory().getInventoryId())
+                        .inventoryName(batch.getInventory().getName())
+                        .quantity(batch.getQuantity())
+                        .expiryDate(batch.getExpiryDate())
+                        .createdAt(batch.getCreatedAt())
+                        .updatedAt(batch.getUpdatedAt())
+                        .build())
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<StockBatchDto> findBatchesExpiringWithinDaysForDistributable(int days){
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime futureLimit = now.plusDays(days);
+
+        List<stockBatches> batches = stockBatchesRepository.findDistributableBatchesExpiringWithin(now, futureLimit);
+        return batches.stream()
+                .map(batch -> StockBatchDto.builder()
+                        .id(batch.getId())
+                        .inventoryId(batch.getInventory().getInventoryId())
+                        .inventoryName(batch.getInventory().getName())
+                        .quantity(batch.getQuantity())
+                        .expiryDate(batch.getExpiryDate())
+                        .createdAt(batch.getCreatedAt())
+                        .updatedAt(batch.getUpdatedAt())
+                        .build())
+                .collect(Collectors.toList());
+    }
+
+    @Override
     @Transactional(readOnly = true)
     public List<StockBatchDto> getBatchesByInventoryId(Long inventoryId) {
         List<stockBatches> batches = stockBatchesRepository

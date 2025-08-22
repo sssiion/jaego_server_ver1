@@ -52,4 +52,6 @@ public interface StockBatchService {
 
     // 배치 오류 사항 수정
     void SettingBatch();
+    List<StockBatchDto> findBatchesExpiringWithinMinutesForConsumable(int minutes);
+    List<StockBatchDto> findBatchesExpiringWithinDaysForDistributable(int days);
 }

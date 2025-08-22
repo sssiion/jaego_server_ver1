@@ -4,6 +4,7 @@ package org.example.jaego.Repository;
 
 
 import org.example.jaego.Entity.StockMovement;
+import org.example.jaego.Entity.stockBatches;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -130,4 +131,6 @@ public interface StockMovementRepository extends JpaRepository<StockMovement, Lo
     List<Object[]> getMovementStatsByInventoryAndPeriod(@Param("inventoryId") Long inventoryId,
                                                         @Param("startDate") LocalDateTime startDate,
                                                         @Param("endDate") LocalDateTime endDate);
+    // 분 단위, 소비 카테고리 타입 필터
+
 }
