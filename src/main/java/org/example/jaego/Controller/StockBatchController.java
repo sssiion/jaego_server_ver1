@@ -65,6 +65,7 @@ public class StockBatchController {
     public void settingStock(){
          stockBatchService.SettingBatch();
     }
+
     @GetMapping("/expiring/con")
     public ResponseEntity<List<StockBatchDto>> getConsumableBatchesExpiringWithin(@RequestParam int minutes){
         List<StockBatchDto> batches = stockBatchService.findBatchesExpiringWithinMinutesForConsumable(minutes);
