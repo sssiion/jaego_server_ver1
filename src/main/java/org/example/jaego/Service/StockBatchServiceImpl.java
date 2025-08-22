@@ -178,6 +178,7 @@ public class StockBatchServiceImpl implements StockBatchService {
         List<Inventory> inventories = inventoryRepository.findInventoriesWithQuantityMismatch();
         inventories.forEach(inventory -> {
             int currentBatchSum = inventory.getStockBatches().stream()
+                    .filter(b -> b.getQuantity() > 0)
                     .mapToInt(stockBatches::getQuantity)
                     .sum();
             // 4. 부족한 수량을 계산합니다. (목표 수량 - 현재 수량)
@@ -217,8 +218,10 @@ public class StockBatchServiceImpl implements StockBatchService {
                 remainingQuantity -= reduceAmount;
                 processedBatches.add("Batch ID: " + batch.getId() + ", 차감량: " + reduceAmount);
             }
-            if( availableQuantity == 0) { // 삭제 코드
-                stockBatchesRepository.deleteById(batch.getId());
+            // 차감 후 배치 수량을 확인해 0이면 삭제
+            stockBatches updatedBatch = stockBatchesRepository.findById(batch.getId()).orElse(null);
+            if (updatedBatch != null && updatedBatch.getQuantity() == 0) {
+                stockBatchesRepository.delete(updatedBatch);
             }
 
         }
@@ -250,7 +253,7 @@ public class StockBatchServiceImpl implements StockBatchService {
                 .build());
     }
 
-    @Override
+    @Override // 만료 배치 조회
     public BatchOperationResult processBatchExpiration() {
         List<stockBatches> expiredBatches = stockBatchesRepository.findExpiredBatches();
         List<String> processedItems = new ArrayList<>();
@@ -264,7 +267,7 @@ public class StockBatchServiceImpl implements StockBatchService {
                     batch.getExpiryDate()));
 
             // 만료 배치는 수량을 0으로 설정하거나 삭제 처리
-            batch.setQuantity(0);
+            //batch.setQuantity(0);
             stockBatchesRepository.save(batch);
 
             // 총 수량 업데이트
