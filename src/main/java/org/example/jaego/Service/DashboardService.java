@@ -19,7 +19,7 @@ public interface DashboardService {
     UrgentProductsStatsDto getUrgentProductsStats(Integer days);
 
     // 만료 추세 데이터 조회
-    List<ExpiryTrendDto> getExpiryTrendData(LocalDate startDate, LocalDate endDate);
+    //List<ExpiryTrendDto> getExpiryTrendData(LocalDateTime startDate, LocalDate endDate);
 
     List<ExpiryTrendDto> getExpiryTrendData(LocalDateTime startDate, LocalDateTime endDate);
 
