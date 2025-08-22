@@ -35,7 +35,36 @@ public class ExcelProcessingService {
 
     public ExcelProcessResultDto processStockExcel(MultipartFile file) {
         long start = System.currentTimeMillis();
-        List<StockExcelRowDto> rows = parsing.parseStockExcel(file);
+
+        //List<StockExcelRowDto> rows = parsing.parseStockExcel(file);
+        String contentType = file.getContentType();
+
+        if (!isAllowedMimeType(contentType)) {
+            return ExcelProcessResultDto.builder()
+                    .processingType("재고")
+                    .totalRows(0)
+                    .processedRows(0)
+                    .errorRows(1)
+                    .errorMessages(List.of("지원하지 않는 파일 형식입니다: " + contentType))
+                    .processedProducts(Collections.emptyList())
+                    .processingTime("0초")
+                    .build();
+        }List<StockExcelRowDto> rows;
+        try {
+            rows = parsing.parseStockExcel(file);
+        } catch (Exception e) {
+            return ExcelProcessResultDto.builder()
+                    .processingType("재고")
+                    .totalRows(0)
+                    .processedRows(0)
+                    .errorRows(1)
+                    .errorMessages(List.of("엑셀 파일 처리 중 오류 발생: " + e.getMessage()))
+                    .processedProducts(Collections.emptyList())
+                    .processingTime("0초")
+                    .build();
+        }
+
+
         List<String> errors = new ArrayList<>();
         List<String> processed = new ArrayList<>();
 
@@ -79,7 +108,34 @@ public class ExcelProcessingService {
 
     public ExcelProcessResultDto processOrderExcel(MultipartFile file) {
         long start = System.currentTimeMillis();
-        List<OrderExcelRowDto> rows = parsing.parseOrderExcel(file);
+        //List<OrderExcelRowDto> rows = parsing.parseOrderExcel(file);
+        String contentType = file.getContentType();
+        if (!isAllowedMimeType(contentType)) {
+            return ExcelProcessResultDto.builder()
+                    .processingType("발주")
+                    .totalRows(0)
+                    .processedRows(0)
+                    .errorRows(1)
+                    .errorMessages(List.of("지원하지 않는 파일 형식입니다: " + contentType))
+                    .processedProducts(Collections.emptyList())
+                    .processingTime("0초")
+                    .build();
+        }
+
+        List<OrderExcelRowDto> rows;
+        try {
+            rows = parsing.parseOrderExcel(file);
+        } catch (Exception e) {
+            return ExcelProcessResultDto.builder()
+                    .processingType("발주")
+                    .totalRows(0)
+                    .processedRows(0)
+                    .errorRows(1)
+                    .errorMessages(List.of("엑셀 파일 처리 중 오류 발생: " + e.getMessage()))
+                    .processedProducts(Collections.emptyList())
+                    .processingTime("0초")
+                    .build();
+        }
         List<String> errors = new ArrayList<>();
         List<String> processed = new ArrayList<>();
 
@@ -170,4 +226,12 @@ public class ExcelProcessingService {
         }
         batchRepo.save(stockBatches.builder().inventory(inv).quantity(qty).expiryDate(expiry).build());
     }
+    private boolean isAllowedMimeType(String contentType) {
+        return contentType != null && (
+                contentType.equals("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet") ||
+                        contentType.equals("application/vnd.ms-excel") ||
+                        contentType.equals("application/octet-stream") // 기본 바이너리형 허용
+        );
+    }
 }
+
