@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import org.example.jaego.Dto.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -34,7 +35,7 @@ public class DashboardController {
 
     @GetMapping("/expiry-trend")
     public List<ExpiryTrendDto> getExpiryTrendData(@RequestParam String start, @RequestParam String end) {
-        return dashboardService.getExpiryTrendData(LocalDate.parse(start), LocalDate.parse(end));
+        return dashboardService.getExpiryTrendData(LocalDateTime.parse(start), LocalDateTime.parse(end));
     }
 
     @GetMapping("/top-urgent")
