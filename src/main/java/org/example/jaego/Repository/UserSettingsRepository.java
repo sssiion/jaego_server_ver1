@@ -26,5 +26,5 @@ public interface UserSettingsRepository extends JpaRepository<UserSettings, Long
     @Query("SELECT b FROM stockBatches b WHERE b.quantity > 0 AND b.expiryDate > :now AND b.expiryDate < :futureLimit")
     List<stockBatches> findExpiringBatches(@Param("now") LocalDateTime now, @Param("futureLimit") LocalDateTime futureLimit);
 
-    List<stockBatches> findByQuantityGreaterThanAndExpiryDateBetween(Integer quantity, LocalDateTime start, LocalDateTime end);
+    //List<stockBatches> findByQuantityGreaterThanAndExpiryDateBetween(Integer quantity, LocalDateTime start, LocalDateTime end);
 }
