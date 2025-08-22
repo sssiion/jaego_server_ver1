@@ -20,7 +20,9 @@ public class ExcelController {
     @PostMapping("/upload")
     public ResponseEntity<ExcelProcessResultDto> uploadExcel(
             @RequestParam("file") MultipartFile file,
-            @RequestParam("type") String type) {
+            @RequestParam("type") String type
+
+    ) {
         if (file.isEmpty()) return ResponseEntity.badRequest().build();
         return switch (type) {
             case "재고" -> ResponseEntity.ok(service.processStockExcel(file));

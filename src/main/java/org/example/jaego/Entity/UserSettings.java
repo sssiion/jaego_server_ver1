@@ -22,7 +22,7 @@ public class UserSettings {
     private Long settingsId;
 
     @Column(name = "user_id", nullable = false, unique = true)
-    private Long userId; // 사용자 ID (추후 User 엔티티와 연관관계 설정 가능)
+    private String userId; // 사용자 ID (추후 User 엔티티와 연관관계 설정 가능)
 
     // 알림 설정
     @Column(name = "alert_threshold", nullable = false)

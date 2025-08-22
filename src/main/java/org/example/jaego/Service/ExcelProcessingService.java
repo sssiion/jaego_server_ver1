@@ -80,6 +80,7 @@ public class ExcelProcessingService {
 
                 inv = invRepo.save(Inventory.builder()
                         .name(r.getProductName())
+                        .userId("jjo")
                         .category(null) // 카테고리가 필요 없으면 null로 둘 수 있음
                         .totalQuantity(r.getRemainingStock())  // 재고 처음 생성시 0으로 초기화
                         .build());
